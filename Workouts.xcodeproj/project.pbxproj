@@ -14,6 +14,7 @@
 		A1B16E5D2AB2434400FCEF90 /* WorkoutsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B16E5C2AB2434400FCEF90 /* WorkoutsTests.swift */; };
 		A1B16E672AB2434400FCEF90 /* WorkoutsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B16E662AB2434400FCEF90 /* WorkoutsUITests.swift */; };
 		A1B16E692AB2434400FCEF90 /* WorkoutsUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B16E682AB2434400FCEF90 /* WorkoutsUITestsLaunchTests.swift */; };
+		A1B16E762AB24B4800FCEF90 /* Exercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B16E752AB24B4800FCEF90 /* Exercise.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,7 @@
 		A1B16E622AB2434400FCEF90 /* WorkoutsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WorkoutsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1B16E662AB2434400FCEF90 /* WorkoutsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutsUITests.swift; sourceTree = "<group>"; };
 		A1B16E682AB2434400FCEF90 /* WorkoutsUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutsUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		A1B16E752AB24B4800FCEF90 /* Exercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exercise.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 			children = (
 				A1B16E4B2AB2434300FCEF90 /* WorkoutsApp.swift */,
 				A1B16E4D2AB2434300FCEF90 /* ContentView.swift */,
+				A1B16E752AB24B4800FCEF90 /* Exercise.swift */,
 				A1B16E4F2AB2434400FCEF90 /* Assets.xcassets */,
 				A1B16E512AB2434400FCEF90 /* Preview Content */,
 			);
@@ -259,6 +262,7 @@
 			files = (
 				A1B16E4E2AB2434300FCEF90 /* ContentView.swift in Sources */,
 				A1B16E4C2AB2434300FCEF90 /* WorkoutsApp.swift in Sources */,
+				A1B16E762AB24B4800FCEF90 /* Exercise.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
