@@ -9,17 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        TabView {
-            VStack {
-                List {
-                    ExerciseView(name: "Squat")
-                    ExerciseView(name: "Deadlift")
-                }
-            }
-            .tabItem {
-                Image(systemName: "plus")
-            }
-        }
+        WorkoutView(name: "Push")
     }
     func addSet() {
         
