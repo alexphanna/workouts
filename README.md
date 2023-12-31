@@ -8,3 +8,4 @@ Workout planning app for iOS in swift.
 - [ ] Built-in timer for workouts
 - [ ] Some sort of community or sharable workout aspect
 - [ ] Settings (change between imperial and metric)
+- [ ] Workout templates
