@@ -7,15 +7,21 @@
 
 import SwiftUI
 
+struct Exercise: Identifiable {
+    let name: String
+    let sets: [Int]
+    let id = UUID()
+}
+
 struct ContentView: View {
+    @State private var name: String = ""
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            WorkoutView().tabItem {
+                Label("Workout", systemImage: "dumbbell")
+            }
         }
-        .padding()
     }
 }
 
