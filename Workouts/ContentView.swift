@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-struct Exercise: Identifiable {
-    let name: String
-    let sets: [Int]
-    let id = UUID()
-}
-
 struct ContentView: View {
     @State private var name: String = ""
     

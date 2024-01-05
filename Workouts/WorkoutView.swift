@@ -8,31 +8,56 @@
 import SwiftUI
 
 struct WorkoutView: View {
+    @State private var exercises: [Exercise] = [ Exercise(name: "Bench Press") ]
+    @State private var isSheetShowing = false
+    @State private var newExerciseName = ""
+    
     var body: some View {
         NavigationView {
             VStack {
                 List {
-                    Section {
-                        Text("Bench press")
-                            .bold()
-                        Text("8 x 115\n8 x 115")
-                        Button(action: addItem) {
-                            Label("Add Set", systemImage: "plus")
-                        }
-                    }
-                    Section {
-                        Button(action: addItem) {
-                            Label("Add Exercise", systemImage: "plus")
+                    ForEach(exercises) { exercise in
+                        Section {
+                            ExerciseView(exercise: exercise)
                         }
                     }
                 }
             }
             .navigationTitle("Push")
-            .toolbar { EditButton() }
+            .toolbar {
+                Button(action: { isSheetShowing = true }) {
+                    Image(systemName: "plus")
+                }.sheet(isPresented: $isSheetShowing) {
+                    NavigationView {
+                        Form {
+                            HStack {
+                                Text("Name")
+                                TextField("bench press", text: $newExerciseName).multilineTextAlignment(.trailing)
+                            }
+                        }
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Cancel", action: { isSheetShowing = false })
+                            }
+                            ToolbarItem(placement: .principal) {
+                                Text("Add Exercise").font(.headline)
+                            }
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("Done", action: { addExercise() }).disabled(newExerciseName.count == 0)
+                            }
+                        }
+                    }
+                }
+                EditButton()
+            }
+        }
+    }
+    
+    func addExercise() {
+        if (newExerciseName.count > 0) {
+            exercises.append(Exercise(name: newExerciseName))
+            isSheetShowing = false
         }
     }
 }
 
-func addItem() {
-    
-}

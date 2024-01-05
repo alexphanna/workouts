@@ -10,3 +10,12 @@ Workout planning app for iOS in swift.
 - [ ] Some sort of community or sharable workout aspect
 - [ ] Settings (change between imperial and metric)
 - [ ] Workout templates
+
+## Layout
+- Home
+    - Displays all workouts
+    - Similar to the notes app home screen
+- Workout
+    - Displays all exercises
+    - Similar to the passwords section of the settings app
+- Settings
