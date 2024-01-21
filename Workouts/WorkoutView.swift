@@ -8,22 +8,21 @@
 import SwiftUI
 
 struct WorkoutView: View {
-    @State private var exercises: [Exercise] = [ Exercise(name: "Bench Press") ]
+    @State var workout: Workout
     @State private var isSheetShowing = false
     @State private var newExerciseName = ""
     
     var body: some View {
-        NavigationView {
             VStack {
                 List {
-                    ForEach(exercises) { exercise in
+                    ForEach(workout.exercises) { exercise in
                         Section {
                             ExerciseView(exercise: exercise)
                         }
                     }
                 }
             }
-            .navigationTitle("Push")
+            .navigationTitle(workout.name)
             .toolbar {
                 Button(action: { isSheetShowing = true }) {
                     Image(systemName: "plus")
@@ -50,12 +49,11 @@ struct WorkoutView: View {
                 }
                 EditButton()
             }
-        }
     }
     
     func addExercise() {
         if (newExerciseName.count > 0) {
-            exercises.append(Exercise(name: newExerciseName))
+            workout.exercises.append(Exercise(name: newExerciseName))
             isSheetShowing = false
         }
     }
