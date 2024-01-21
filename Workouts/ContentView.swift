@@ -7,11 +7,14 @@
 
 import SwiftUI
 
+
 struct ContentView: View {
-    @State  private var workouts: [Workout] = [Workout(name: "Push", date: .now)]
-    @State private var isSheetShowing = false
+    @State private var workouts: [Workout] = [Workout(name: "Push", date: .now)]
+    @State private var isAddSheetShowing = false
+    @State private var isSettingsSheetShowing = false
     @State private var newWorkoutName = ""
     @State private var newWorkoutDate: Date = .now
+    
     
     var body: some View {
         NavigationView {
@@ -34,21 +37,23 @@ struct ContentView: View {
                     EditButton()
                 }
                 ToolbarItemGroup(placement: .bottomBar) {
+                    Button(action: { isSettingsSheetShowing = true }) {
+                        Image(systemName: "gear")
+                    }.sheet(isPresented: $isSettingsSheetShowing) {
+                        SettingsView()
+                    }
                     Spacer()
-                    Button(action: { isSheetShowing = true }) {
+                    Button(action: { isAddSheetShowing = true }) {
                         Image(systemName: "plus")
-                    }.sheet(isPresented: $isSheetShowing) {
+                    }.sheet(isPresented: $isAddSheetShowing) {
                         NavigationView {
                             Form {
-                                HStack {
-                                    Text("Name")
-                                    TextField("push", text: $newWorkoutName).multilineTextAlignment(.trailing)
-                                }
+                                TextField("Name", text: $newWorkoutName)
                                 DatePicker("Date", selection: $newWorkoutDate, displayedComponents: [.date])
                             }
                             .toolbar {
                                 ToolbarItem(placement: .cancellationAction) {
-                                    Button("Cancel", action: { isSheetShowing = false })
+                                    Button("Cancel", action: { isAddSheetShowing = false })
                                 }
                                 ToolbarItem(placement: .principal) {
                                     Text("Add Workout").font(.headline)
@@ -68,7 +73,7 @@ struct ContentView: View {
         if (newWorkoutName.count > 0) {
             workouts.append(Workout(name: newWorkoutName, date: newWorkoutDate))
             workouts = workouts.sorted(by: { $0.date.compare($1.date) == .orderedDescending })
-            isSheetShowing = false
+            isAddSheetShowing = false
             newWorkoutName = ""
             newWorkoutDate = .now
         }

@@ -29,10 +29,7 @@ struct WorkoutView: View {
                 }.sheet(isPresented: $isSheetShowing) {
                     NavigationView {
                         Form {
-                            HStack {
-                                Text("Name")
-                                TextField("bench press", text: $newExerciseName).multilineTextAlignment(.trailing)
-                            }
+                            TextField("Name", text: $newExerciseName)
                         }
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
@@ -55,6 +52,7 @@ struct WorkoutView: View {
         if (newExerciseName.count > 0) {
             workout.exercises.append(Exercise(name: newExerciseName))
             isSheetShowing = false
+            newExerciseName = ""
         }
     }
 }

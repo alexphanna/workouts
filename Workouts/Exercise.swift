@@ -7,7 +7,14 @@
 
 import SwiftUI
 
-struct Exercise: Identifiable {
+@Observable
+class Exercise: Identifiable {
     var name: String
-    var id = UUID()
+    var sets: [Set]
+    var id: UUID
+    init(name: String) {
+        self.name = name
+        self.sets = []
+        self.id = UUID()
+    }
 }
