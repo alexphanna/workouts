@@ -5,22 +5,23 @@
 //  Created by Alex on 12/31/23.
 //
 
+import SwiftData
 import SwiftUI
 
 struct WorkoutView: View {
-    @State var workout: Workout
     @State private var isSheetShowing = false
     @State private var newExerciseName = ""
+    @State var workout: Workout
     
     var body: some View {
             VStack {
-                List {
+                /* List {
                     ForEach(workout.exercises) { exercise in
                         Section {
                             ExerciseView(exercise: exercise)
                         }
                     }
-                }
+                } */
             }
             .navigationTitle(workout.name)
             .toolbar {
@@ -50,7 +51,7 @@ struct WorkoutView: View {
     
     func addExercise() {
         if (newExerciseName.count > 0) {
-            workout.exercises.append(Exercise(name: newExerciseName))
+            //workout.exercises.append(Exercise(name: newExerciseName))
             isSheetShowing = false
             newExerciseName = ""
         }

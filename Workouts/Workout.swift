@@ -5,18 +5,19 @@
 //  Created by Alex on 1/5/24.
 //
 
+import SwiftData
 import SwiftUI
 
-@Observable
+@Model
 class Workout: Identifiable {
     var name: String
     var date: Date
-    var exercises: [Exercise]
-    var id: UUID
+    // var exercises: [Exercise]
+    @Attribute(.unique) var id: UUID
     init(name: String, date: Date) {
         self.name = name
         self.date = date
-        self.exercises = []
+        // self.exercises = []
         self.id = UUID()
     }
 }

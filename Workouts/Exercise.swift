@@ -5,9 +5,9 @@
 //  Created by Alex on 12/31/23.
 //
 
+import SwiftData
 import SwiftUI
 
-@Observable
 class Exercise: Identifiable {
     var name: String
     var sets: [Set]

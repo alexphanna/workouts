@@ -5,14 +5,15 @@
 //  Created by Alex on 12/31/23.
 //
 
+import SwiftData
 import SwiftUI
 
 struct ExerciseView: View {
     @Environment(\.editMode) private var editMode
-    @State var exercise: Exercise
     @State private var isSheetShowing = false
     @State private var reps: Int = 0
     @State private var weight: Int = 0
+    @State var exercise: Exercise
     
     var body: some View {
         Text(exercise.name)
