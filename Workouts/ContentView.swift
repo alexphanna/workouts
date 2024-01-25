@@ -17,19 +17,18 @@ struct ContentView: View {
     @Query var workouts: [Workout]
     @Environment(\.modelContext) private var context
     
-    
     var body: some View {
         NavigationView {
             List {
                 ForEach(workouts) { workout in
-                    // NavigationLink(destination: WorkoutView(workout: workout)) {
+                    NavigationLink(destination: WorkoutView(workout: workout)) {
                         VStack(alignment: .leading) {
                             Text(workout.name)
                                 .font(.headline)
                             Text(workout.date.formatted(date: .numeric, time: .omitted))
                                 .font(.callout)
                         }
-                    // }
+                    }
                 }
                 //.onDelete { workouts.remove(atOffsets: $0) }
             }

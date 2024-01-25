@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct SettingsView : View {
-    @Environment(\.dismiss) var dismiss
-    
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
     @AppStorage("measurementSystem") var measurementSystem: Int = 1
     
     var body : some View {
@@ -21,6 +21,14 @@ struct SettingsView : View {
                             Text("Metric").tag(0)
                             Text("US").tag(1)
                         }
+                        Button("Reset", role: .destructive, action: {
+                            do {
+                                try context.delete(model: Workout.self)
+                                dismiss()
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                        })
                     } header: {
                         Text("Localization")
                     } footer: {

@@ -12,12 +12,13 @@ import SwiftUI
 class Workout: Identifiable {
     var name: String
     var date: Date
-    // var exercises: [Exercise]
+    var exerciseNames: [String] = []
+    var exerciseReps: [[Int]] = []
+    var exerciseWeights: [[Int]] = []
     @Attribute(.unique) var id: UUID
     init(name: String, date: Date) {
         self.name = name
         self.date = date
-        // self.exercises = []
         self.id = UUID()
     }
 }
