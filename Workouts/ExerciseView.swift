@@ -13,24 +13,22 @@ struct ExerciseView: View {
     @State private var isSheetShowing = false
     @State private var newReps: Int = 0
     @State private var newWeight: Int = 0
-    @State var name: String
-    @State var reps: [Int]
-    @State var weights: [Int]
+    @State var exercise: Exercise
     
     var body: some View {
-        Text(name)
-            if (reps.count > 0) {
+        Text(exercise.name)
+        if (exercise.sets.count > 0) {
             if (editMode?.wrappedValue.isEditing == true) {
-                ForEach(0..<reps.count, id: \.self) { i in
-                    Text(reps[i].description + " x " + weights[i].description + " lbs")
+                ForEach(0..<exercise.sets.count, id: \.self) { i in
+                    Text(exercise.sets[i].reps.description + " x " + exercise.sets[i].weight.description + " lbs")
                 }
-                //.onDelete { exercise.sets.remove(atOffsets: $0) }
-                //.onMove { exercise.sets.move(fromOffsets: $0, toOffset: $1) }
+                .onDelete { exercise.sets.remove(atOffsets: $0) }
+                .onMove { exercise.sets.move(fromOffsets: $0, toOffset: $1) }
             }
             else {
                 VStack {
-                    ForEach(0..<reps.count, id: \.self) { i in
-                        Text(reps[i].description + " x " + weights[i].description + " lbs")
+                    ForEach(0..<exercise.sets.count, id: \.self) { i in
+                        Text(exercise.sets[i].reps.description + " x " + exercise.sets[i].weight.description + " lbs")
                     }
                 }
             }
@@ -67,11 +65,18 @@ struct ExerciseView: View {
     }
     func addSet() {
         if (newReps > 0) {
-            reps.append(newReps)
-            weights.append(newWeight)
+            exercise.sets.append(Set(reps: newReps, weight: newWeight))
             isSheetShowing = false
             newReps = 0
             newWeight = 0
         }
     }
+    /*func removeSet(at indexSet: IndexSet) {
+        reps.remove(atOffsets: indexSet)
+        weights.remove(atOffsets: indexSet)
+    }
+    func moveSet(from indexSet: IndexSet, to destination: Int) {
+        reps.move(fromOffsets: indexSet, toOffset: destination)
+        weights.move(fromOffsets: indexSet, toOffset: destination)
+    }*/
 }

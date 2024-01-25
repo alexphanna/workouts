@@ -14,7 +14,7 @@ struct ContentView: View {
     @State private var newWorkoutName = ""
     @State private var newWorkoutDate: Date = .now
     
-    @Query var workouts: [Workout]
+    @Query(sort: \Workout.date, order: .reverse) var workouts: [Workout]
     @Environment(\.modelContext) private var context
     
     var body: some View {
@@ -30,7 +30,7 @@ struct ContentView: View {
                         }
                     }
                 }
-                //.onDelete { workouts.remove(atOffsets: $0) }
+                .onDelete( perform: removeWorkout)
             }
             .navigationTitle("Workouts")
             .toolbar {
@@ -76,6 +76,12 @@ struct ContentView: View {
             isAddSheetShowing = false
             newWorkoutName = ""
             newWorkoutDate = .now
+        }
+    }
+    
+    func removeWorkout(at indexSet: IndexSet) {
+        for index in indexSet {
+            context.delete(workouts[index])
         }
     }
 }

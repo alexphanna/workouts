@@ -16,9 +16,9 @@ struct WorkoutView: View {
     var body: some View {
             VStack {
                 List {
-                    ForEach(0..<workout.exerciseNames.count, id: \.self) { i in
+                    ForEach(0..<workout.exercises.count, id: \.self) { i in
                         Section {
-                            ExerciseView(name: workout.exerciseNames[i], reps: workout.exerciseReps[i], weights: workout.exerciseWeights[i])
+                            ExerciseView(exercise: workout.exercises[i])
                         }
                     }
                 }
@@ -51,9 +51,7 @@ struct WorkoutView: View {
     
     func addExercise() {
         if (newExerciseName.count > 0) {
-            workout.exerciseNames.append(newExerciseName)
-            workout.exerciseReps.append([Int]())
-            workout.exerciseWeights.append([Int]())
+            workout.exercises.append(Exercise(name: newExerciseName))
             isSheetShowing = false
             newExerciseName = ""
         }
