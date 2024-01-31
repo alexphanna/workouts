@@ -20,7 +20,7 @@ struct ExerciseView: View {
         if (exercise.sets.count > 0) {
             if (editMode?.wrappedValue.isEditing == true) {
                 ForEach(0..<exercise.sets.count, id: \.self) { i in
-                    Text(exercise.sets[i].reps.description + " x " + exercise.sets[i].weight.description + " lbs")
+                    Text(exercise.sets[i].description)
                 }
                 .onDelete { exercise.sets.remove(atOffsets: $0) }
                 .onMove { exercise.sets.move(fromOffsets: $0, toOffset: $1) }
@@ -28,7 +28,7 @@ struct ExerciseView: View {
             else {
                 VStack {
                     ForEach(0..<exercise.sets.count, id: \.self) { i in
-                        Text(exercise.sets[i].reps.description + " x " + exercise.sets[i].weight.description + " lbs")
+                        Text(exercise.sets[i].description)
                     }
                 }
             }
@@ -44,7 +44,7 @@ struct ExerciseView: View {
                         }
                         HStack {
                             Text("Weight: ")
-                            TextField("0", value: $newWeight, formatter: NumberFormatter()).multilineTextAlignment(.trailing)
+                            TextField("", value: $newWeight, formatter: NumberFormatter()).multilineTextAlignment(.trailing)
                                 .keyboardType(.numberPad)
                         }
                     }
@@ -71,12 +71,4 @@ struct ExerciseView: View {
             newWeight = 0
         }
     }
-    /*func removeSet(at indexSet: IndexSet) {
-        reps.remove(atOffsets: indexSet)
-        weights.remove(atOffsets: indexSet)
-    }
-    func moveSet(from indexSet: IndexSet, to destination: Int) {
-        reps.move(fromOffsets: indexSet, toOffset: destination)
-        weights.move(fromOffsets: indexSet, toOffset: destination)
-    }*/
 }

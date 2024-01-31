@@ -16,5 +16,5 @@ class Exercise {
     init(name: String) {
         self.name = name
         self.sets = []
-    }    
+    }
 }

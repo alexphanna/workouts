@@ -13,6 +13,10 @@ class Set {
     var reps: Int
     var weight: Int
     
+    public var description: String {
+        return reps.description + " x " + weight.description
+    }
+    
     init(reps: Int, weight: Int) {
         self.reps = reps
         self.weight = weight
