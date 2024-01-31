@@ -30,7 +30,16 @@ struct WorkoutView: View {
                 }.sheet(isPresented: $isSheetShowing) {
                     NavigationView {
                         Form {
-                            TextField("Name", text: $newExerciseName)
+                            if (UserDefaults.standard.bool(forKey: "limitExercises")) {
+                                Picker("Name", selection: $newExerciseName) {
+                                    ForEach (UserDefaults.standard.array(forKey: "exerciseNames") as? [String] ?? [String](), id: \.self) { name in
+                                        Text(name)
+                                    }
+                                }
+                            }
+                            else {
+                                TextField("Name", text: $newExerciseName)
+                            }
                         }
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {

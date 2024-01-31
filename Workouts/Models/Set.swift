@@ -14,7 +14,7 @@ class Set {
     var weight: Int
     
     public var description: String {
-        return reps.description + " x " + weight.description
+        return reps.description + " × " + weight.description
     }
     
     init(reps: Int, weight: Int) {

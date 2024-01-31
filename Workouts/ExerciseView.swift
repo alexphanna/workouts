@@ -11,24 +11,24 @@ import SwiftUI
 struct ExerciseView: View {
     @Environment(\.editMode) private var editMode
     @State private var isSheetShowing = false
-    @State private var newReps: Int = 0
-    @State private var newWeight: Int = 0
+    @State private var newReps: String = ""
+    @State private var newWeight: String = ""
     @State var exercise: Exercise
     
     var body: some View {
         Text(exercise.name)
         if (exercise.sets.count > 0) {
             if (editMode?.wrappedValue.isEditing == true) {
-                ForEach(0..<exercise.sets.count, id: \.self) { i in
-                    Text(exercise.sets[i].description)
+                ForEach(exercise.sets, id: \.self) { set in
+                    Text(set.description)
+                        .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
                 }
-                .onDelete { exercise.sets.remove(atOffsets: $0) }
-                .onMove { exercise.sets.move(fromOffsets: $0, toOffset: $1) }
+                .onDelete { exercise.sets.remove(atOffsets: $0)}
             }
             else {
                 VStack {
-                    ForEach(0..<exercise.sets.count, id: \.self) { i in
-                        Text(exercise.sets[i].description)
+                    ForEach(exercise.sets, id: \.self) { set in
+                        Text(set.description)
                     }
                 }
             }
@@ -39,12 +39,13 @@ struct ExerciseView: View {
                 NavigationView {
                     Form {
                         HStack {
-                            Text("Reps: ")
-                            Stepper(newReps.description, value: $newReps).multilineTextAlignment(.trailing)
+                            Text("Reps")
+                            TextField("0", text: $newReps).multilineTextAlignment(.trailing)
+                                .keyboardType(.numberPad)
                         }
                         HStack {
-                            Text("Weight: ")
-                            TextField("", value: $newWeight, formatter: NumberFormatter()).multilineTextAlignment(.trailing)
+                            Text("Weight")
+                            TextField("0", text: $newWeight).multilineTextAlignment(.trailing)
                                 .keyboardType(.numberPad)
                         }
                     }
@@ -57,6 +58,7 @@ struct ExerciseView: View {
                         }
                         ToolbarItem(placement: .confirmationAction) {
                             Button("Done", action: { addSet() })
+                                .disabled(Int(newReps) ?? 0 == 0 && Int(newWeight) ?? 0 == 0)
                         }
                     }
                 }
@@ -64,11 +66,7 @@ struct ExerciseView: View {
         }
     }
     func addSet() {
-        if (newReps > 0) {
-            exercise.sets.append(Set(reps: newReps, weight: newWeight))
-            isSheetShowing = false
-            newReps = 0
-            newWeight = 0
-        }
+        exercise.sets.append(Set(reps: Int(newReps) ?? 0, weight: Int(newWeight) ?? 0))
+        isSheetShowing = false
     }
 }
