@@ -14,6 +14,7 @@ class Exercise {
     var equipment: String
     var sets: [Set]
     var date: Date
+    var notes: String
     
     public var description: String {
         if equipment.description == "None" {
@@ -27,5 +28,6 @@ class Exercise {
         self.equipment = equipment
         self.sets = []
         self.date = Date.now
+        self.notes = ""
     }
 }

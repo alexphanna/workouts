@@ -12,6 +12,7 @@ struct SettingsView : View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage("measurementSystem") var measurementSystem: String = "lbs"
     @AppStorage("limitExercises") var limitExercises: Bool = true
+    @AppStorage("colorScheme") var colorScheme: String = "System"
     @State var isSheetShowing = false
     @State var confirmationShow = false
     @State private var exerciseNames = UserDefaults.standard.array(forKey: "exerciseNames") as? [String] ?? [String]()

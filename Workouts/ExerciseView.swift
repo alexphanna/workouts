@@ -16,7 +16,7 @@ struct ExerciseView: View {
     @State var exercise: Exercise
     
     var body: some View {
-        NavigationLink(destination: InfoView(title: exercise.description, sets: exercise.sets)) {
+        NavigationLink(destination: InfoView(exercise: exercise)) {
             Text(exercise.description)
                 .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
         }
