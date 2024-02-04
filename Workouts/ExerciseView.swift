@@ -23,14 +23,15 @@ struct ExerciseView: View {
         .disabled(editMode?.wrappedValue.isEditing == true || exercise.sets.count == 0)
         if (exercise.sets.count > 0) {
             if (editMode?.wrappedValue.isEditing == true) {
-                ForEach(exercise.sets.sorted { $0.number < $1.number }, id: \.self) { set in
+                ForEach(exercise.sets.sorted { $0.date < $1.date }, id: \.self) { set in
                     Text(set.description)
                         .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
                 }
+                .onDelete { exercise.sets.remove(atOffsets: $0) }
             }
             else {
                 VStack {
-                    ForEach(exercise.sets.sorted { $0.number < $1.number }, id: \.self) { set in
+                    ForEach(exercise.sets.sorted { $0.date < $1.date }, id: \.self) { set in
                         Text(set.description)
                             .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
                     }
@@ -71,7 +72,7 @@ struct ExerciseView: View {
         }
     }
     func addSet() {
-        exercise.sets.append(Set(reps: Int(newReps) ?? 0, weight: Int(newWeight) ?? 0, number: exercise.sets.count))
+        exercise.sets.append(Set(reps: Int(newReps) ?? 0, weight: Int(newWeight) ?? 0))
         isSheetShowing = false
     }
 }

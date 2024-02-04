@@ -5,11 +5,10 @@ Workout planning app for iOS in Swift using SwiftUI and SwiftData.
 
 ## Features
 - [ ] Workout persistence using SwiftData
-    - [x] Adding workouts, exercises, and sets
-    - [x] Deleting workouts
-    - [ ] Deleting and moving exercises and sets
+    - [x] Adding and deleting workouts, exercises, and sets
+    - [ ] Moving exercises and sets
     - [ ] Copying and pasting workouts, exercises, and sets
-    - [ ] Renaming workouts, exercises, and sets
+    - [ ] Renaming workouts and exercises
 - [ ] Statistics for exercises
     - [X] Mean reps and weight
     - [ ] Personal records (1RM, etc.)

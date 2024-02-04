@@ -9,14 +9,12 @@ import SwiftData
 import SwiftUI
 
 @Model
-class Workout: Identifiable {
+class Workout {
     var name: String
     var date: Date
     var exercises: [Exercise] = []
-    @Attribute(.unique) var id: UUID
     init(name: String, date: Date) {
         self.name = name
         self.date = date
-        self.id = UUID()
     }
 }

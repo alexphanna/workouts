@@ -20,11 +20,12 @@ struct WorkoutView: View {
     var body: some View {
             VStack {
                 List {
-                    ForEach(workout.exercises.sorted { $0.number < $1.number }, id: \.self) { exercise in
+                    ForEach(workout.exercises.sorted { $0.date < $1.date }, id: \.self) { exercise in
                         Section {
                             ExerciseView(exercise: exercise)
                         }
                     }
+                    .onDelete { workout.exercises.remove(atOffsets: $0) }
                 }
             }
             .navigationTitle(workout.name)
@@ -69,10 +70,10 @@ struct WorkoutView: View {
     
     func addExercise() {
         if (UserDefaults.standard.bool(forKey: "limitExercises")) {
-            workout.exercises.append(Exercise(name: exerciseNames[nameIndex], equipment: equipmentNames[equipmentIndex], number: workout.exercises.count))
+            workout.exercises.append(Exercise(name: exerciseNames[nameIndex], equipment: equipmentNames[equipmentIndex]))
         }
         else {
-            workout.exercises.append(Exercise(name: name, equipment: equipmentNames[equipmentIndex], number: workout.exercises.count))
+            workout.exercises.append(Exercise(name: name, equipment: equipmentNames[equipmentIndex]))
         }
         isSheetShowing = false
     }
