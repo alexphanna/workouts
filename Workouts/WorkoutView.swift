@@ -11,6 +11,7 @@ import SwiftUI
 struct WorkoutView: View {
     @State private var isSheetShowing = false
     @State private var newExerciseName = ""
+    @State private var newExerciseEquipment = ""
     @Bindable var workout: Workout
     
     var body: some View {
@@ -40,6 +41,11 @@ struct WorkoutView: View {
                             else {
                                 TextField("Name", text: $newExerciseName)
                             }
+                            Picker("Equipment", selection: $newExerciseEquipment) {
+                                ForEach (UserDefaults.standard.array(forKey: "equipmentNames") as? [String] ?? [String](), id: \.self) { equipment in
+                                    Text(equipment)
+                                }
+                            }
                         }
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
@@ -60,7 +66,7 @@ struct WorkoutView: View {
     
     func addExercise() {
         if (newExerciseName.count > 0) {
-            workout.exercises.append(Exercise(name: newExerciseName, number: workout.exercises.count))
+            workout.exercises.append(Exercise(name: newExerciseName, equipment: newExerciseEquipment, number: workout.exercises.count))
             isSheetShowing = false
             newExerciseName = ""
         }

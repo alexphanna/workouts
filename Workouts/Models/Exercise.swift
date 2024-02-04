@@ -11,11 +11,20 @@ import SwiftUI
 @Model
 class Exercise {
     var name: String
+    var equipment: String
     var sets: [Set]
     var number: Int
     
-    init(name: String, number: Int) {
+    public var description: String {
+        if equipment.description == "None" {
+            return name.description
+        }
+        return equipment.description + " " + name.description
+    }
+    
+    init(name: String, equipment: String, number: Int) {
         self.name = name
+        self.equipment = equipment
         self.sets = []
         self.number = number
     }

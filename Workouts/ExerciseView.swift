@@ -16,7 +16,7 @@ struct ExerciseView: View {
     @State var exercise: Exercise
     
     var body: some View {
-        Text(exercise.name)
+        Text(exercise.description)
         if (exercise.sets.count > 0) {
             if (editMode?.wrappedValue.isEditing == true) {
                 ForEach(exercise.sets.sorted { $0.number < $1.number }, id: \.self) { set in
@@ -66,7 +66,7 @@ struct ExerciseView: View {
         }
     }
     func addSet() {
-        exercise.sets += [Set(reps: Int(newReps) ?? 0, weight: Int(newWeight) ?? 0, number: exercise.sets.count)]
+        exercise.sets.append(Set(reps: Int(newReps) ?? 0, weight: Int(newWeight) ?? 0, number: exercise.sets.count))
         isSheetShowing = false
     }
 }

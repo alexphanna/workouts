@@ -14,7 +14,9 @@ struct SettingsView : View {
     @AppStorage("limitExercises") var limitExercises: Bool = true
     @State var isSheetShowing = false
     @State private var exerciseNames = UserDefaults.standard.array(forKey: "exerciseNames") as? [String] ?? [String]()
+    @State private var equipmentNames = UserDefaults.standard.array(forKey: "equipmentNames") as? [String] ?? [String]()
     @State private var newExerciseName = ""
+    @State private var newEquipmentName = ""
     
     var body : some View {
         NavigationView {
@@ -30,7 +32,7 @@ struct SettingsView : View {
                                     ForEach (exerciseNames, id: \.self) { name in
                                         Text(name)
                                     }
-                                    .onDelete { removeExercise(at: $0) }
+                                    .onDelete { removeName(names: &exerciseNames, at: $0, forKey: "exerciseNames") }
                                 }
                                 .toolbar {
                                     ToolbarItemGroup(placement: .topBarTrailing) {
@@ -49,14 +51,12 @@ struct SettingsView : View {
                                                         Text("Add Exercise").font(.headline)
                                                     }
                                                     ToolbarItem(placement: .confirmationAction) {
-                                                        Button("Done", action: { addExercise(name: newExerciseName) })
+                                                        Button("Done", action: { addName(names: &exerciseNames, name: newExerciseName, forKey: "exerciseNames") })
                                                             .disabled(newExerciseName.count == 0)
                                                     }
                                                 }
                                             }
                                         }
-                                    }
-                                    ToolbarItemGroup(placement: .topBarTrailing) {
                                         EditButton()
                                     }
                                 }
@@ -64,6 +64,42 @@ struct SettingsView : View {
                         }
                     } header: {
                         Text("Options")
+                    }
+                    Section {
+                        NavigationLink("Equipment") {
+                            List {
+                                ForEach (equipmentNames, id: \.self) { name in
+                                    Text(name)
+                                }
+                                .onDelete { removeName(names: &equipmentNames, at: $0, forKey: "equipmentNames") }
+                            }
+                            .toolbar {
+                                ToolbarItemGroup(placement: .topBarTrailing) {
+                                    Button(action: { isSheetShowing = true; UserDefaults.standard.set(equipmentNames, forKey: "equipmentNames") }) {
+                                        Image(systemName: "plus")
+                                    }.sheet(isPresented: $isSheetShowing) {
+                                        NavigationView {
+                                            Form {
+                                                TextField("Name", text: $newEquipmentName)
+                                            }
+                                            .toolbar {
+                                                ToolbarItem(placement: .cancellationAction) {
+                                                    Button("Cancel", action: { isSheetShowing = false })
+                                                }
+                                                ToolbarItem(placement: .principal) {
+                                                    Text("Add Exercise").font(.headline)
+                                                }
+                                                ToolbarItem(placement: .confirmationAction) {
+                                                    Button("Done", action: { addName(names: &equipmentNames, name: newEquipmentName, forKey: "equipmentNames") })
+                                                        .disabled(newEquipmentName.count == 0)
+                                                }
+                                            }
+                                        }
+                                    }
+                                    EditButton()
+                                }
+                            }
+                        }
                     }
                     Section {
                         Picker("Measurement System", selection: $measurementSystem) {
@@ -100,13 +136,13 @@ struct SettingsView : View {
             }
         }
     }
-    func addExercise(name: String) {
-        exerciseNames.append(name)
-        UserDefaults.standard.set(exerciseNames, forKey: "exerciseNames")
+    func addName(names: inout [String], name: String, forKey: String) {
+        names.append(name)
+        UserDefaults.standard.set(names, forKey: forKey)
         isSheetShowing = false
     }
-    func removeExercise(at offsets: IndexSet) {
-        exerciseNames.remove(atOffsets: offsets)
-        UserDefaults.standard.set(exerciseNames, forKey: "exerciseNames")
+    func removeName(names: inout [String], at offsets: IndexSet, forKey: String) {
+        names.remove(atOffsets: offsets)
+        UserDefaults.standard.set(names, forKey: forKey)
     }
 }
