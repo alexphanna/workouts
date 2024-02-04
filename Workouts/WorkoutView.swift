@@ -25,7 +25,6 @@ struct WorkoutView: View {
                             ExerciseView(exercise: exercise)
                         }
                     }
-                    .onDelete { workout.exercises.remove(atOffsets: $0) }
                 }
             }
             .navigationTitle(workout.name)

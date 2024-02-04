@@ -10,7 +10,7 @@ import SwiftUI
 struct SettingsView : View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
-    @AppStorage("measurementSystem") var measurementSystem: Int = 1
+    @AppStorage("measurementSystem") var measurementSystem: String = "lbs"
     @AppStorage("limitExercises") var limitExercises: Bool = true
     @State var isSheetShowing = false
     @State var confirmationShow = false
@@ -104,8 +104,8 @@ struct SettingsView : View {
                     }
                     Section {
                         Picker("Measurement System", selection: $measurementSystem) {
-                            Text("Metric").tag(0)
-                            Text("US").tag(1)
+                            Text("Metric").tag("kgs")
+                            Text("US").tag("lbs")
                         }
                     } header: {
                         Text("Localization")

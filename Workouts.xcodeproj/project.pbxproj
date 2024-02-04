@@ -19,6 +19,7 @@
 		FA6C90D42B412FC000A3A203 /* WorkoutsUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6C90D32B412FC000A3A203 /* WorkoutsUITestsLaunchTests.swift */; };
 		FA7DE7CE2B41EC87009BB6AA /* WorkoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7DE7CD2B41EC87009BB6AA /* WorkoutView.swift */; };
 		FA7E17312B48B51600BEC162 /* Workout.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7E17302B48B51600BEC162 /* Workout.swift */; };
+		FAC69C7A2B6F401700E24071 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC69C792B6F401700E24071 /* InfoView.swift */; };
 		FADFAD7D2B464CD700540752 /* ExerciseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADFAD7C2B464CD700540752 /* ExerciseView.swift */; };
 /* End PBXBuildFile section */
 
@@ -55,6 +56,7 @@
 		FA6C90D32B412FC000A3A203 /* WorkoutsUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutsUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		FA7DE7CD2B41EC87009BB6AA /* WorkoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutView.swift; sourceTree = "<group>"; };
 		FA7E17302B48B51600BEC162 /* Workout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workout.swift; sourceTree = "<group>"; };
+		FAC69C792B6F401700E24071 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		FADFAD7C2B464CD700540752 /* ExerciseView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -121,6 +123,7 @@
 				FA7DE7CD2B41EC87009BB6AA /* WorkoutView.swift */,
 				FA6C90B62B412FBE00A3A203 /* WorkoutsApp.swift */,
 				FA6C90B82B412FBE00A3A203 /* ContentView.swift */,
+				FAC69C792B6F401700E24071 /* InfoView.swift */,
 				FA6C90BA2B412FC000A3A203 /* Assets.xcassets */,
 				FA6C90BC2B412FC000A3A203 /* Preview Content */,
 				FA35F6812B5DB4BD00CD485D /* SettingsView.swift */,
@@ -290,6 +293,7 @@
 				FA6C90B72B412FBE00A3A203 /* WorkoutsApp.swift in Sources */,
 				FADFAD7D2B464CD700540752 /* ExerciseView.swift in Sources */,
 				FA3F53B52B62EFE700F33B1D /* Exercise.swift in Sources */,
+				FAC69C7A2B6F401700E24071 /* InfoView.swift in Sources */,
 				FA7E17312B48B51600BEC162 /* Workout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

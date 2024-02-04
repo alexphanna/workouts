@@ -15,10 +15,7 @@ class Set {
     var number: Int
     
     public var description: String {
-        if UserDefaults.standard.integer(forKey: "measurementSystem") == 0 {
-            return reps.description + " × " + weight.description + " kgs"
-        }
-        return reps.description + " × " + weight.description + " lbs"
+        return reps.description + " × " + weight.description + " " + (UserDefaults.standard.string(forKey: "measurementSystem") ?? "")
     }
     
     init(reps: Int, weight: Int, number: Int) {

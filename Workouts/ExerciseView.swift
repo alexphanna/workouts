@@ -16,20 +16,23 @@ struct ExerciseView: View {
     @State var exercise: Exercise
     
     var body: some View {
-        Text(exercise.description)
-            .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
+        NavigationLink(destination: InfoView(title: exercise.description, sets: exercise.sets)) {
+            Text(exercise.description)
+                .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
+        }
+        .disabled(editMode?.wrappedValue.isEditing == true || exercise.sets.count == 0)
         if (exercise.sets.count > 0) {
             if (editMode?.wrappedValue.isEditing == true) {
                 ForEach(exercise.sets.sorted { $0.number < $1.number }, id: \.self) { set in
                     Text(set.description)
                         .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
                 }
-                .onDelete { exercise.sets.remove(atOffsets: $0)}
             }
             else {
                 VStack {
                     ForEach(exercise.sets.sorted { $0.number < $1.number }, id: \.self) { set in
                         Text(set.description)
+                            .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
                     }
                 }
             }
