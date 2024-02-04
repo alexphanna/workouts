@@ -10,8 +10,11 @@ import SwiftUI
 
 struct WorkoutView: View {
     @State private var isSheetShowing = false
-    @State private var newExerciseName = ""
-    @State private var newExerciseEquipment = ""
+    @State private var exerciseNames = UserDefaults.standard.array(forKey: "exerciseNames") as? [String] ?? [String]()
+    @State private var equipmentNames = UserDefaults.standard.array(forKey: "equipmentNames") as? [String] ?? [String]()
+    @State private var name = ""
+    @State private var nameIndex = 0
+    @State private var equipmentIndex = 0
     @Bindable var workout: Workout
     
     var body: some View {
@@ -22,6 +25,7 @@ struct WorkoutView: View {
                             ExerciseView(exercise: exercise)
                         }
                     }
+                    .onDelete { workout.exercises.remove(atOffsets: $0) }
                 }
             }
             .navigationTitle(workout.name)
@@ -32,18 +36,18 @@ struct WorkoutView: View {
                     NavigationView {
                         Form {
                             if (UserDefaults.standard.bool(forKey: "limitExercises")) {
-                                Picker("Name", selection: $newExerciseName) {
-                                    ForEach (UserDefaults.standard.array(forKey: "exerciseNames") as? [String] ?? [String](), id: \.self) { name in
-                                        Text(name)
+                                Picker("Name", selection: $nameIndex) {
+                                    ForEach (0..<exerciseNames.count, id: \.self) { i in
+                                        Text(exerciseNames[i])
                                     }
                                 }
                             }
                             else {
-                                TextField("Name", text: $newExerciseName)
+                                TextField("Name", text: $name)
                             }
-                            Picker("Equipment", selection: $newExerciseEquipment) {
-                                ForEach (UserDefaults.standard.array(forKey: "equipmentNames") as? [String] ?? [String](), id: \.self) { equipment in
-                                    Text(equipment)
+                            Picker("Equipment", selection: $equipmentIndex) {
+                                ForEach (0..<equipmentNames.count, id: \.self) { i in
+                                    Text(equipmentNames[i])
                                 }
                             }
                         }
@@ -55,7 +59,7 @@ struct WorkoutView: View {
                                 Text("Add Exercise").font(.headline)
                             }
                             ToolbarItem(placement: .confirmationAction) {
-                                Button("Done", action: { addExercise() }).disabled(newExerciseName.count == 0)
+                                Button("Done", action: { addExercise() })
                             }
                         }
                     }
@@ -65,11 +69,13 @@ struct WorkoutView: View {
     }
     
     func addExercise() {
-        if (newExerciseName.count > 0) {
-            workout.exercises.append(Exercise(name: newExerciseName, equipment: newExerciseEquipment, number: workout.exercises.count))
-            isSheetShowing = false
-            newExerciseName = ""
+        if (UserDefaults.standard.bool(forKey: "limitExercises")) {
+            workout.exercises.append(Exercise(name: exerciseNames[nameIndex], equipment: equipmentNames[equipmentIndex], number: workout.exercises.count))
         }
+        else {
+            workout.exercises.append(Exercise(name: name, equipment: equipmentNames[equipmentIndex], number: workout.exercises.count))
+        }
+        isSheetShowing = false
     }
 }
 

@@ -13,6 +13,7 @@ struct SettingsView : View {
     @AppStorage("measurementSystem") var measurementSystem: Int = 1
     @AppStorage("limitExercises") var limitExercises: Bool = true
     @State var isSheetShowing = false
+    @State var confirmationShow = false
     @State private var exerciseNames = UserDefaults.standard.array(forKey: "exerciseNames") as? [String] ?? [String]()
     @State private var equipmentNames = UserDefaults.standard.array(forKey: "equipmentNames") as? [String] ?? [String]()
     @State private var newExerciseName = ""
@@ -62,44 +63,44 @@ struct SettingsView : View {
                                 }
                             }
                         }
-                    } header: {
-                        Text("Options")
-                    }
-                    Section {
-                        NavigationLink("Equipment") {
-                            List {
-                                ForEach (equipmentNames, id: \.self) { name in
-                                    Text(name)
+                        Section {
+                            NavigationLink("Equipment") {
+                                List {
+                                    ForEach (equipmentNames, id: \.self) { name in
+                                        Text(name)
+                                    }
+                                    .onDelete { removeName(names: &equipmentNames, at: $0, forKey: "equipmentNames") }
                                 }
-                                .onDelete { removeName(names: &equipmentNames, at: $0, forKey: "equipmentNames") }
-                            }
-                            .toolbar {
-                                ToolbarItemGroup(placement: .topBarTrailing) {
-                                    Button(action: { isSheetShowing = true; UserDefaults.standard.set(equipmentNames, forKey: "equipmentNames") }) {
-                                        Image(systemName: "plus")
-                                    }.sheet(isPresented: $isSheetShowing) {
-                                        NavigationView {
-                                            Form {
-                                                TextField("Name", text: $newEquipmentName)
-                                            }
-                                            .toolbar {
-                                                ToolbarItem(placement: .cancellationAction) {
-                                                    Button("Cancel", action: { isSheetShowing = false })
+                                .toolbar {
+                                    ToolbarItemGroup(placement: .topBarTrailing) {
+                                        Button(action: { isSheetShowing = true; UserDefaults.standard.set(equipmentNames, forKey: "equipmentNames") }) {
+                                            Image(systemName: "plus")
+                                        }.sheet(isPresented: $isSheetShowing) {
+                                            NavigationView {
+                                                Form {
+                                                    TextField("Name", text: $newEquipmentName)
                                                 }
-                                                ToolbarItem(placement: .principal) {
-                                                    Text("Add Exercise").font(.headline)
-                                                }
-                                                ToolbarItem(placement: .confirmationAction) {
-                                                    Button("Done", action: { addName(names: &equipmentNames, name: newEquipmentName, forKey: "equipmentNames") })
-                                                        .disabled(newEquipmentName.count == 0)
+                                                .toolbar {
+                                                    ToolbarItem(placement: .cancellationAction) {
+                                                        Button("Cancel", action: { isSheetShowing = false })
+                                                    }
+                                                    ToolbarItem(placement: .principal) {
+                                                        Text("Add Exercise").font(.headline)
+                                                    }
+                                                    ToolbarItem(placement: .confirmationAction) {
+                                                        Button("Done", action: { addName(names: &equipmentNames, name: newEquipmentName, forKey: "equipmentNames") })
+                                                            .disabled(newEquipmentName.count == 0)
+                                                    }
                                                 }
                                             }
                                         }
+                                        EditButton()
                                     }
-                                    EditButton()
                                 }
                             }
                         }
+                    } header: {
+                        Text("Personalization")
                     }
                     Section {
                         Picker("Measurement System", selection: $measurementSystem) {
@@ -110,17 +111,20 @@ struct SettingsView : View {
                         Text("Localization")
                     }
                     Section {
-                        Button("Reset", role: .destructive, action: {
-                            if let bundleID = Bundle.main.bundleIdentifier {
-                                UserDefaults.standard.removePersistentDomain(forName: bundleID)
-                            }
-                            do {
-                                try context.delete(model: Workout.self)
-                                dismiss()
-                            } catch {
-                                print(error.localizedDescription)
-                            }
-                        })
+                        Button("Reset", role: .destructive, action: { confirmationShow = true })
+                            .confirmationDialog("This will reset your workouts.", isPresented: $confirmationShow, titleVisibility: .visible) {
+                            Button("Reset Workouts", role: .destructive, action: {
+                                if let bundleID = Bundle.main.bundleIdentifier {
+                                    UserDefaults.standard.removePersistentDomain(forName: bundleID)
+                                }
+                                do {
+                                    try context.delete(model: Workout.self)
+                                    confirmationShow = false
+                                } catch {
+                                    print(error.localizedDescription)
+                                }
+                            })
+                        }
                     } footer: {
                         Text("Workouts 0.0.1")
                     }

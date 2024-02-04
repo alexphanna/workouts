@@ -17,9 +17,9 @@ class Exercise {
     
     public var description: String {
         if equipment.description == "None" {
-            return name.description
+            return name.description.capitalized
         }
-        return equipment.description + " " + name.description
+        return (equipment.description + " " + name.description).capitalized
     }
     
     init(name: String, equipment: String, number: Int) {

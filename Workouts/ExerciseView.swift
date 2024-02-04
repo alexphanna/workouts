@@ -17,6 +17,7 @@ struct ExerciseView: View {
     
     var body: some View {
         Text(exercise.description)
+            .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
         if (exercise.sets.count > 0) {
             if (editMode?.wrappedValue.isEditing == true) {
                 ForEach(exercise.sets.sorted { $0.number < $1.number }, id: \.self) { set in
@@ -35,6 +36,7 @@ struct ExerciseView: View {
         }
         if (editMode?.wrappedValue.isEditing == true) {
             Button("Add Set", action: { isSheetShowing = true })
+                .deleteDisabled(true)
                 .sheet(isPresented: $isSheetShowing) {
                 NavigationView {
                     Form {
