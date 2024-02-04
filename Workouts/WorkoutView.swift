@@ -11,14 +11,14 @@ import SwiftUI
 struct WorkoutView: View {
     @State private var isSheetShowing = false
     @State private var newExerciseName = ""
-    @State var workout: Workout
+    @Bindable var workout: Workout
     
     var body: some View {
             VStack {
                 List {
-                    ForEach(0..<workout.exercises.count, id: \.self) { i in
+                    ForEach(workout.exercises.sorted { $0.number < $1.number }, id: \.self) { exercise in
                         Section {
-                            ExerciseView(exercise: workout.exercises[i])
+                            ExerciseView(exercise: exercise)
                         }
                     }
                 }
@@ -60,7 +60,7 @@ struct WorkoutView: View {
     
     func addExercise() {
         if (newExerciseName.count > 0) {
-            workout.exercises.append(Exercise(name: newExerciseName))
+            workout.exercises.append(Exercise(name: newExerciseName, number: workout.exercises.count))
             isSheetShowing = false
             newExerciseName = ""
         }

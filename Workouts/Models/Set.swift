@@ -12,13 +12,15 @@ import SwiftUI
 class Set {
     var reps: Int
     var weight: Int
+    var number: Int
     
     public var description: String {
         return reps.description + " × " + weight.description
     }
     
-    init(reps: Int, weight: Int) {
+    init(reps: Int, weight: Int, number: Int) {
         self.reps = reps
         self.weight = weight
+        self.number = number
     }
 }

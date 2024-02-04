@@ -12,9 +12,11 @@ import SwiftUI
 class Exercise {
     var name: String
     var sets: [Set]
+    var number: Int
     
-    init(name: String) {
+    init(name: String, number: Int) {
         self.name = name
         self.sets = []
+        self.number = number
     }
 }
