@@ -23,4 +23,8 @@ class Set {
         self.weight = weight
         self.date = Date.now
     }
+    
+    public var volume: Int {
+        return reps * weight
+    }
 }

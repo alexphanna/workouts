@@ -9,10 +9,9 @@ Workout planning app for iOS in Swift using SwiftUI and SwiftData.
     - [ ] Moving exercises and sets
     - [ ] Copying and pasting workouts, exercises, and sets
     - [ ] Renaming workouts and exercises
-- [ ] Statistics for exercises
+- [X] Statistics for exercises
     - [X] Mean reps and weight
-    - [ ] Personal records (1RM, etc.)
-    - [ ] Charts and graphs (using [SwiftUICharts](https://github.com/willdale/SwiftUICharts))
+    - [X] Personal records (1RM, etc.)
 - [ ] Settings
     - [x] Choice of Picker or TextField for exercise names
     - [X] Customizable choices for exercise names and equipment
