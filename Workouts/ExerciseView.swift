@@ -13,7 +13,10 @@ struct ExerciseView: View {
     @State private var isSheetShowing = false
     @State private var newReps: String = ""
     @State private var newWeight: String = ""
+    @State private var isWarmup: Bool = false
     @State var exercise: Exercise
+    
+    @Environment(\.modelContext) private var context
     
     var body: some View {
         NavigationLink(destination: InfoView(exercise: exercise)) {
@@ -24,18 +27,29 @@ struct ExerciseView: View {
         if (exercise.sets.count > 0) {
             if (editMode?.wrappedValue.isEditing == true) {
                 ForEach(exercise.sets.sorted { $0.date < $1.date }, id: \.self) { set in
-                    Text(set.description)
-                        .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
+                    if (set.warmup) {
+                        Text(set.description)
+                            .foregroundColor(.gray)
+                    }
+                    else {
+                        Text(set.description)
+                    }
                 }
                 .onDelete { exercise.sets.remove(atOffsets: $0) }
             }
             else {
-                VStack {
+                VStack(alignment: .leading) {
                     ForEach(exercise.sets.sorted { $0.date < $1.date }, id: \.self) { set in
-                        Text(set.description)
-                            .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
+                        if (set.warmup) {
+                            Text(set.description)
+                                .foregroundColor(.gray)
+                        }
+                        else {
+                            Text(set.description)
+                        }
                     }
                 }
+                .deleteDisabled(true)
             }
         }
         if (editMode?.wrappedValue.isEditing == true) {
@@ -47,13 +61,13 @@ struct ExerciseView: View {
                         HStack {
                             Text("Reps")
                             TextField("0", text: $newReps).multilineTextAlignment(.trailing)
-                                .keyboardType(.numberPad)
-                        }
+                                .keyboardType(.numberPad)                        }
                         HStack {
                             Text("Weight")
                             TextField("0", text: $newWeight).multilineTextAlignment(.trailing)
                                 .keyboardType(.numberPad)
                         }
+                        Toggle("Warm-up", isOn: $isWarmup)
                     }
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
@@ -72,7 +86,14 @@ struct ExerciseView: View {
         }
     }
     func addSet() {
-        exercise.sets.append(Set(reps: Int(newReps) ?? 0, weight: Int(newWeight) ?? 0))
+        exercise.sets.append(Set(reps: Int(newReps) ?? 0, weight: Int(newWeight) ?? 0, warmup: isWarmup))
+        isWarmup = false
         isSheetShowing = false
+        
+        do {
+            try context.save()
+        } catch {
+            
+        }
     }
 }

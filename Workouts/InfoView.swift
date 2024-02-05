@@ -37,22 +37,28 @@ struct InfoView: View {
                 Text("Notes")
             }
         }
-        .navigationTitle(exercise.name)
+        .navigationTitle(exercise.description)
     }
     
     func averageReps() -> Double {
         var sum = 0
+        var count = 0
         for set in exercise.sets {
-            sum += set.reps
+            if (!set.warmup) {
+                sum += set.reps
+                count += 1
+            }
         }
-        return Double(sum) / Double(exercise.sets.count)
+        return Double(sum) / Double(count)
     }
     func averageWeight() -> Double {
         var totalReps = 0
         var sum = 0
         for set in exercise.sets {
-            totalReps += set.reps
-            sum += set.volume
+            if (!set.warmup) {
+                totalReps += set.reps
+                sum += set.volume
+            }
         }
         return Double(sum) / Double(totalReps)
     }
@@ -67,7 +73,7 @@ struct InfoView: View {
         var max = 0
         for workout in workouts {
             for exercise in workout.exercises {
-                if exercise.name == self.exercise.name {
+                if exercise.description == self.exercise.description {
                     for set in exercise.sets {
                         if set.weight > max {
                             max = set.weight
@@ -83,7 +89,7 @@ struct InfoView: View {
         var maxSet = Set(reps: 0, weight: 0)
         for workout in workouts {
             for exercise in workout.exercises {
-                if exercise.name == self.exercise.name {
+                if exercise.description == self.exercise.description {
                     for set in exercise.sets {
                         if set.volume > maxVolume {
                             maxVolume = set.volume

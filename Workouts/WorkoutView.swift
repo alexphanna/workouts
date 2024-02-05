@@ -15,7 +15,9 @@ struct WorkoutView: View {
     @State private var name = ""
     @State private var nameIndex = 0
     @State private var equipmentIndex = 0
-    @Bindable var workout: Workout
+    @State var workout: Workout
+    
+    @Environment(\.modelContext) private var context
     
     var body: some View {
             VStack {
@@ -25,7 +27,6 @@ struct WorkoutView: View {
                             ExerciseView(exercise: exercise)
                         }
                     }
-                    .onDelete { workout.exercises.remove(atOffsets: $0) }
                 }
             }
             .navigationTitle(workout.name)

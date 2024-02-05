@@ -12,16 +12,18 @@ import SwiftUI
 class Set {
     var reps: Int
     var weight: Int
+    var warmup: Bool
     var date: Date
+    
+    init(reps: Int, weight: Int, warmup: Bool = false) {
+        self.reps = reps
+        self.weight = weight
+        self.warmup = warmup
+        self.date = Date.now
+    }
     
     public var description: String {
         return reps.description + " × " + weight.description + " " + (UserDefaults.standard.string(forKey: "measurementSystem") ?? "")
-    }
-    
-    init(reps: Int, weight: Int) {
-        self.reps = reps
-        self.weight = weight
-        self.date = Date.now
     }
     
     public var volume: Int {
