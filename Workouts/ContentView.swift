@@ -24,9 +24,10 @@ struct ContentView: View {
         NavigationView {
             List {
                 ForEach(workouts) { workout in
-                    NavigationLink(destination: WorkoutView(title: workout.name)) {
+                    NavigationLink(destination: WorkoutView(workout: workout)) {
                         VStack(alignment: .leading) {
                             Text(workout.name)
+                                .bold()
                             Text((workout.date.formatted(date: .numeric, time: .omitted)))
                         }
                     }
@@ -42,10 +43,25 @@ struct ContentView: View {
                     Button(action: { isShowingSheet = true }) {
                         Label("Add Item", systemImage: "plus")
                     }
-                    .sheet(isPresented: $isShowingSheet, onDismiss: addWorkout) {
-                        Form {
-                            TextField("Name", text: $newName)
-                            DatePicker("Date", selection: $newDate, displayedComponents: [.date])
+                    .sheet(isPresented: $isShowingSheet) {
+                        NavigationView {
+                            Form {
+                                TextField("Name", text: $newName)
+                                DatePicker("Date", selection: $newDate, displayedComponents: [.date])
+                            }
+                            .toolbar {
+                                ToolbarItem(placement: .cancellationAction) {
+                                    Button("Cancel", action: { isShowingSheet = false })
+                                }
+                                ToolbarItem(placement: .principal) {
+                                    Text("Add Exercise")
+                                        .font(.headline)
+                                }
+                                ToolbarItem(placement: .confirmationAction) {
+                                    Button("Done", action: addWorkout )
+                                        .disabled(newName.isEmpty)
+                                }
+                            }
                         }
                     }
                 }
@@ -60,14 +76,13 @@ struct ContentView: View {
             newWorkout.name = newName
             newWorkout.exercises = []
             
+            isShowingSheet = false
             newDate = Date.now
             newName = ""
 
             do {
                 try viewContext.save()
             } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
@@ -81,8 +96,6 @@ struct ContentView: View {
             do {
                 try viewContext.save()
             } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
