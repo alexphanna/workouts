@@ -2,21 +2,24 @@
 //  ContentView.swift
 //  Workouts
 //
-//  Created by Alex on 12/31/23.
+//  Created by Alex on 2/6/24.
 //
 
-import SwiftData
 import SwiftUI
+import CoreData
 
 struct ContentView: View {
-    @State private var isAddSheetShowing = false
-    @State private var isSettingsSheetShowing = false
-    @State private var newWorkoutName = ""
-    @State private var newWorkoutDate: Date = .now
+    @State private var isShowingSheet = false
+    @State private var newName: String = ""
+    @State private var newDate: Date = .now
     
-    @Query(sort: \Workout.date, order: .reverse) var workouts: [Workout]
-    @Environment(\.modelContext) private var context
-    
+    @Environment(\.managedObjectContext) private var viewContext
+
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \Workout.date, ascending: false)],
+        animation: .default)
+    private var workouts: FetchedResults<Workout>
+
     var body: some View {
         NavigationView {
             List {
@@ -24,43 +27,39 @@ struct ContentView: View {
                     NavigationLink(destination: WorkoutView(workout: workout)) {
                         VStack(alignment: .leading) {
                             Text(workout.name)
-                                .font(.headline)
-                            Text(workout.date.formatted(date: .numeric, time: .omitted))
-                                .font(.callout)
+                                .bold()
+                            Text((workout.date.formatted(date: .numeric, time: .omitted)))
                         }
                     }
                 }
-                .onDelete( perform: removeWorkout)
+                .onDelete(perform: deleteWorkouts)
             }
             .navigationTitle("Workouts")
             .toolbar {
-                ToolbarItemGroup(placement: .topBarTrailing) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()
                 }
-                ToolbarItemGroup(placement: .bottomBar) {
-                    Button(action: { isSettingsSheetShowing = true }) {
-                        Image(systemName: "gear")
-                    }.sheet(isPresented: $isSettingsSheetShowing) {
-                        SettingsView()
+                ToolbarItem {
+                    Button(action: { isShowingSheet = true }) {
+                        Label("Add Item", systemImage: "plus")
                     }
-                    Spacer()
-                    Button(action: { isAddSheetShowing = true }) {
-                        Image(systemName: "plus")
-                    }.sheet(isPresented: $isAddSheetShowing) {
+                    .sheet(isPresented: $isShowingSheet) {
                         NavigationView {
                             Form {
-                                TextField("Name", text: $newWorkoutName)
-                                DatePicker("Date", selection: $newWorkoutDate, displayedComponents: [.date])
+                                TextField("Name", text: $newName)
+                                DatePicker("Date", selection: $newDate, displayedComponents: [.date])
                             }
                             .toolbar {
                                 ToolbarItem(placement: .cancellationAction) {
-                                    Button("Cancel", action: { isAddSheetShowing = false })
+                                    Button("Cancel", action: { isShowingSheet = false })
                                 }
                                 ToolbarItem(placement: .principal) {
-                                    Text("Add Workout").font(.headline)
+                                    Text("Add Exercise")
+                                        .font(.headline)
                                 }
                                 ToolbarItem(placement: .confirmationAction) {
-                                    Button("Done", action: { addWorkout() }).disabled(newWorkoutName.count == 0)
+                                    Button("Done", action: addWorkout )
+                                        .disabled(newName.isEmpty)
                                 }
                             }
                         }
@@ -69,24 +68,41 @@ struct ContentView: View {
             }
         }
     }
-    
-    func addWorkout() {
-        if (newWorkoutName.count > 0) {
-            context.insert(Workout(name: newWorkoutName, date: newWorkoutDate))
-            isAddSheetShowing = false
-            newWorkoutName = ""
-            newWorkoutDate = .now
+
+    private func addWorkout() {
+        withAnimation {
+            let newWorkout = Workout(context: viewContext)
+            newWorkout.date = newDate
+            newWorkout.name = newName
+            newWorkout.exercises = []
+            
+            isShowingSheet = false
+            newDate = Date.now
+            newName = ""
+
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
         }
     }
-    
-    func removeWorkout(at indexSet: IndexSet) {
-        for index in indexSet {
-            context.delete(workouts[index])
+
+    private func deleteWorkouts(offsets: IndexSet) {
+        withAnimation {
+            offsets.map { workouts[$0] }.forEach(viewContext.delete)
+
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
         }
     }
 }
 
 #Preview {
-    ContentView()
-        .modelContainer (for: Workout.self)
+    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }

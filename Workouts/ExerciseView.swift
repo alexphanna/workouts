@@ -2,98 +2,74 @@
 //  ExerciseView.swift
 //  Workouts
 //
-//  Created by Alex on 12/31/23.
+//  Created by Alex on 2/7/24.
 //
 
-import SwiftData
 import SwiftUI
 
 struct ExerciseView: View {
-    @Environment(\.editMode) private var editMode
-    @State private var isSheetShowing = false
-    @State private var newReps: String = ""
-    @State private var newWeight: String = ""
-    @State private var isWarmup: Bool = false
+    @State private var isShowingSheet = false
+    @State private var newReps = ""
+    @State private var newWeight = ""
     @State var exercise: Exercise
     
-    @Environment(\.modelContext) private var context
+    @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.editMode) private var editMode
     
     var body: some View {
-        NavigationLink(destination: InfoView(exercise: exercise)) {
-            Text(exercise.description)
-                .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
-        }
-        .disabled(editMode?.wrappedValue.isEditing == true || exercise.sets.count == 0)
-        if (exercise.sets.count > 0) {
-            if (editMode?.wrappedValue.isEditing == true) {
-                ForEach(exercise.sets.sorted { $0.date < $1.date }, id: \.self) { set in
-                    if (set.warmup) {
-                        Text(set.description)
-                            .foregroundColor(.gray)
-                    }
-                    else {
-                        Text(set.description)
-                    }
+        Text(exercise.name)
+            .bold()
+        if exercise.sets.count > 0 {
+            VStack(alignment: .leading) {
+                ForEach(exercise.sets.array as? [Set] ?? []) { set in
+                    Text(set.description)
                 }
-                .onDelete { exercise.sets.remove(atOffsets: $0) }
-            }
-            else {
-                VStack(alignment: .leading) {
-                    ForEach(exercise.sets.sorted { $0.date < $1.date }, id: \.self) { set in
-                        if (set.warmup) {
-                            Text(set.description)
-                                .foregroundColor(.gray)
-                        }
-                        else {
-                            Text(set.description)
-                        }
-                    }
-                }
-                .deleteDisabled(true)
             }
         }
-        if (editMode?.wrappedValue.isEditing == true) {
-            Button("Add Set", action: { isSheetShowing = true })
-                .deleteDisabled(true)
-                .sheet(isPresented: $isSheetShowing) {
-                NavigationView {
-                    Form {
-                        HStack {
-                            Text("Reps")
-                            TextField("0", text: $newReps).multilineTextAlignment(.trailing)
-                                .keyboardType(.numberPad)                        }
-                        HStack {
-                            Text("Weight")
-                            TextField("0", text: $newWeight).multilineTextAlignment(.trailing)
-                                .keyboardType(.numberPad)
+        if editMode?.wrappedValue.isEditing == true {
+            Button("Add Set", action: { isShowingSheet = true })
+                .sheet(isPresented: $isShowingSheet) {
+                    NavigationView {
+                        Form {
+                            TextField("Reps", text: $newReps)
+                            TextField("Weight", text: $newWeight)
                         }
-                        Toggle("Warm-up", isOn: $isWarmup)
-                    }
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel", action: { isSheetShowing = false })
-                        }
-                        ToolbarItem(placement: .principal) {
-                            Text("Add Set").font(.headline)
-                        }
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Done", action: { addSet() })
-                                .disabled(Int(newReps) ?? 0 == 0 && Int(newWeight) ?? 0 == 0)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Cancel", action: { isShowingSheet = false })
+                            }
+                            ToolbarItem(placement: .principal) {
+                                Text("Add Exercise")
+                                    .font(.headline)
+                            }
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("Done", action: addSet )
+                                    .disabled(newReps.isEmpty || newWeight.isEmpty)
+                            }
                         }
                     }
                 }
-            }
         }
     }
-    func addSet() {
-        exercise.sets.append(Set(reps: Int(newReps) ?? 0, weight: Int(newWeight) ?? 0, warmup: isWarmup))
-        isWarmup = false
-        isSheetShowing = false
-        
-        do {
-            try context.save()
-        } catch {
+    
+    private func addSet() {
+        withAnimation {
+            let newSet = Set(context: viewContext)
+            newSet.reps = Int16(newReps) ?? 0
+            newSet.weight = Int16(newWeight) ?? 0
             
+            exercise.addToSets(newSet)
+            
+            isShowingSheet = false
+            newReps = ""
+            newWeight = ""
+
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
         }
     }
 }

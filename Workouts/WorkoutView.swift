@@ -2,81 +2,87 @@
 //  WorkoutView.swift
 //  Workouts
 //
-//  Created by Alex on 12/31/23.
+//  Created by Alex on 2/6/24.
 //
 
-import SwiftData
 import SwiftUI
 
 struct WorkoutView: View {
-    @State private var isSheetShowing = false
-    @State private var exerciseNames = UserDefaults.standard.array(forKey: "exerciseNames") as? [String] ?? [String]()
-    @State private var equipmentNames = UserDefaults.standard.array(forKey: "equipmentNames") as? [String] ?? [String]()
-    @State private var name = ""
-    @State private var nameIndex = 0
-    @State private var equipmentIndex = 0
+    @State private var isShowingSheet = false
+    @State private var newName = ""
     @State var workout: Workout
     
-    @Environment(\.modelContext) private var context
+    @Environment(\.managedObjectContext) private var viewContext
     
     var body: some View {
-            VStack {
-                List {
-                    ForEach(workout.exercises.sorted { $0.date < $1.date }, id: \.self) { exercise in
-                        Section {
-                            ExerciseView(exercise: exercise)
-                        }
-                    }
+        List {
+            ForEach(workout.exercises.array as? [Exercise] ?? []) { (exercise: Exercise) in
+                Section {
+                    ExerciseView(exercise: exercise)
                 }
             }
-            .navigationTitle(workout.name)
-            .toolbar {
-                Button(action: { isSheetShowing = true }) {
-                    Image(systemName: "plus")
-                }.sheet(isPresented: $isSheetShowing) {
+        }
+        .navigationTitle(workout.name)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                EditButton()
+            }
+            ToolbarItem {
+                Button(action: { isShowingSheet = true }) {
+                    Label("Add Item", systemImage: "plus")
+                }
+                .sheet(isPresented: $isShowingSheet) {
                     NavigationView {
                         Form {
-                            if (UserDefaults.standard.bool(forKey: "limitExercises")) {
-                                Picker("Name", selection: $nameIndex) {
-                                    ForEach (0..<exerciseNames.count, id: \.self) { i in
-                                        Text(exerciseNames[i])
-                                    }
-                                }
-                            }
-                            else {
-                                TextField("Name", text: $name)
-                            }
-                            Picker("Equipment", selection: $equipmentIndex) {
-                                ForEach (0..<equipmentNames.count, id: \.self) { i in
-                                    Text(equipmentNames[i])
-                                }
-                            }
+                            TextField("Name", text: $newName)
                         }
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
-                                Button("Cancel", action: { isSheetShowing = false })
+                                Button("Cancel", action: { isShowingSheet = false })
                             }
                             ToolbarItem(placement: .principal) {
-                                Text("Add Exercise").font(.headline)
+                                Text("Add Exercise")
+                                    .font(.headline)
                             }
                             ToolbarItem(placement: .confirmationAction) {
-                                Button("Done", action: { addExercise() })
+                                Button("Done", action: addExercise )
+                                    .disabled(newName.isEmpty)
                             }
                         }
                     }
                 }
-                EditButton()
             }
-    }
-    
-    func addExercise() {
-        if (UserDefaults.standard.bool(forKey: "limitExercises")) {
-            workout.exercises.append(Exercise(name: exerciseNames[nameIndex], equipment: equipmentNames[equipmentIndex]))
         }
-        else {
-            workout.exercises.append(Exercise(name: name, equipment: equipmentNames[equipmentIndex]))
-        }
-        isSheetShowing = false
     }
-}
+    private func addExercise() {
+        let newExercise = Exercise(context: viewContext)
+        newExercise.name = newName
+        
+        workout.addToExercises(newExercise)
+        
+        isShowingSheet = false
+        newName = ""
+        
+        do {
+            try viewContext.save()
+        } catch {
+            let nsError = error as NSError
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+    }
 
+    /*private func deleteExercises(offsets: IndexSet) {
+        withAnimation {
+            offsets.map { exercises[$0] }.forEach(viewContext.delete)
+
+            do {
+                try viewContext.save()
+            } catch {
+                // Replace this implementation with code to handle the error appropriately.
+                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
+    }*/
+}

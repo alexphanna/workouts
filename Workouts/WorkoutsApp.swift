@@ -2,31 +2,19 @@
 //  WorkoutsApp.swift
 //  Workouts
 //
-//  Created by Alex on 12/31/23.
+//  Created by Alex on 2/6/24.
 //
 
-import SwiftData
 import SwiftUI
 
 @main
 struct WorkoutsApp: App {
-    private var defaultExercises = ["Squat", "Leg press", "Lunge", "Deadlift", "Leg extension", "Leg curl", "Standing calf raise", "Seated calf raise", "Bench press", "Chest fly", "Push-up", "Pull-down", "Pull-up", "Bent-over row", "Upright row", "Shoulder press", "Lateral raise", "Shouldder shrug", "Pushdown", "Triceps extension", "Bicep curl", "Crunch", "Russian twist", "Leg raise", "Back extension"].sorted { $0 < $1 }
-    
-    private var defaultEquipment = ["Barbell", "Dumbbell", "Kettlebell", "Machine", "None"].sorted { $0 < $1 }
-    
-    init() {
-        if((UserDefaults.standard.array(forKey: "exerciseNames") as? [String] ?? [String]()).count == 0) {
-            UserDefaults.standard.set(defaultExercises, forKey: "exerciseNames")
-        }
-        if((UserDefaults.standard.array(forKey: "equipmentNames") as? [String] ?? [String]()).count == 0) {
-            UserDefaults.standard.set(defaultEquipment, forKey: "equipmentNames")
-        }
-    }
-    
+    let persistenceController = PersistenceController.shared
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
-        .modelContainer (for: Workout.self)
     }
 }
