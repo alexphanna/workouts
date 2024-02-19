@@ -18,7 +18,7 @@ extension Set {
 
     @NSManaged public var reps: Int16
     @NSManaged public var weight: Int16
-    @NSManaged public var exercise: Exercise
+    @NSManaged public var exercise: Exercise?
 
 }
 

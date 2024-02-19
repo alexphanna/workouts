@@ -20,10 +20,19 @@ struct ExerciseView: View {
         Text(exercise.name)
             .bold()
         if exercise.sets.count > 0 {
-            VStack(alignment: .leading) {
+            if editMode?.wrappedValue.isEditing == true {
                 ForEach(exercise.sets.array as? [Set] ?? []) { set in
                     Text(set.description)
                 }
+                .onDelete(perform: deleteSet)
+            }
+            else {
+                VStack(alignment: .leading) {
+                    ForEach(exercise.sets.array as? [Set] ?? []) { set in
+                        Text(set.description)
+                    }
+                }
+                .deleteDisabled(true)
             }
         }
         if editMode?.wrappedValue.isEditing == true {
@@ -32,7 +41,9 @@ struct ExerciseView: View {
                     NavigationView {
                         Form {
                             TextField("Reps", text: $newReps)
+                                .keyboardType(.numberPad)
                             TextField("Weight", text: $newWeight)
+                                .keyboardType(.numberPad)
                         }
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
@@ -49,6 +60,7 @@ struct ExerciseView: View {
                         }
                     }
                 }
+                .deleteDisabled(true)
         }
     }
     
@@ -69,6 +81,21 @@ struct ExerciseView: View {
             } catch {
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
+    }
+    
+    func deleteSet(offsets: IndexSet) {
+        withAnimation {
+            if let sets = exercise.sets.array as? [Set] {
+                offsets.map { sets[$0] }.forEach(viewContext.delete)
+                
+                do {
+                    try viewContext.save()
+                } catch {
+                    let nsError = error as NSError
+                    fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                }
             }
         }
     }

@@ -5,6 +5,7 @@
 //  Created by Alex on 2/6/24.
 //
 
+import CoreData
 import SwiftUI
 
 struct WorkoutView: View {
@@ -21,6 +22,7 @@ struct WorkoutView: View {
                     ExerciseView(exercise: exercise)
                 }
             }
+            //.onDelete(perform: deleteExercises)
         }
         .navigationTitle(workout.name)
         .toolbar {
@@ -31,6 +33,7 @@ struct WorkoutView: View {
                 Button(action: { isShowingSheet = true }) {
                     Label("Add Item", systemImage: "plus")
                 }
+                .deleteDisabled(true)
                 .sheet(isPresented: $isShowingSheet) {
                     NavigationView {
                         Form {
@@ -71,18 +74,20 @@ struct WorkoutView: View {
         }
     }
 
-    /*private func deleteExercises(offsets: IndexSet) {
+    private func deleteExercises(offsets: IndexSet) {
         withAnimation {
-            offsets.map { exercises[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            if let exercises = workout.exercises.array as? [Exercise] {
+                offsets.map { exercises[$0] }.forEach(viewContext.delete)
+                
+                do {
+                    try viewContext.save()
+                } catch {
+                    // Replace this implementation with code to handle the error appropriately.
+                    // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                    let nsError = error as NSError
+                    fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                }
             }
         }
-    }*/
+    }
 }

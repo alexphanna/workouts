@@ -16,8 +16,7 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Workout.date, ascending: false)],
-        animation: .default)
+        sortDescriptors: [NSSortDescriptor(keyPath: \Workout.date, ascending: false)])
     private var workouts: FetchedResults<Workout>
 
     var body: some View {
