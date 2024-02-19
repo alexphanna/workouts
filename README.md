@@ -1,4 +1,4 @@
-# <img src="Workouts.png" width="24"/> Workouts
+# <img src="Workouts/Assets.xcassets/AppIcon.appiconset/Workouts.png" width="24"/> Workouts
 
 ## Abstract
 Workout planning app for iOS in Swift using SwiftUI and SwiftData. 
