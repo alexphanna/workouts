@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage("limitExercises") private var limitExercises: Bool = true
+    @AppStorage("unit") private var unit: String = "lb"
     @State private var defaultExercises = UserDefaults.standard.stringArray(forKey: "defaultExercises")
     @State private var defaultEquipment = UserDefaults.standard.stringArray(forKey: "defaultEquipment")
     
@@ -30,6 +31,14 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("Options")
+                } 
+                Section {
+                    Picker("Measurement System", selection: $unit) {
+                        Text("US").tag("lb")
+                        Text("Metric").tag("kg")
+                    }
+                } header: {
+                    Text("Localization")
                 } footer: {
                     Text("Workout 0.0.2")
                 }
