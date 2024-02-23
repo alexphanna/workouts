@@ -11,6 +11,7 @@ import SwiftUI
 struct WorkoutView: View {
     @State private var isShowingSheet = false
     @State private var newName = ""
+    @State private var newEquipment = "None"
     @State var workout: Workout
     
     @Environment(\.managedObjectContext) private var viewContext
@@ -37,14 +38,28 @@ struct WorkoutView: View {
                 .sheet(isPresented: $isShowingSheet) {
                     NavigationView {
                         Form {
-                            TextField("Name", text: $newName)
+                            if UserDefaults.standard.bool(forKey: "limitExercises") {
+                                Picker("Name", selection: $newName) {
+                                    ForEach(UserDefaults.standard.array(forKey: "defaultExercises") as? [String] ?? [String](), id: \.self) { exercise in
+                                        Text(exercise)
+                                    }
+                                }
+                            }
+                            else {
+                                TextField("Name", text: $newName)
+                            }
+                            Picker("Equipment", selection: $newEquipment) {
+                                ForEach(["Barbell", "Dumbbell", "Kettlebell", "Machine", "None"], id: \.self) { equipment in
+                                    Text(equipment)
+                                }
+                            }
                         }
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
                                 Button("Cancel", action: { isShowingSheet = false })
                             }
                             ToolbarItem(placement: .principal) {
-                                Text("Add Exercise")
+                                Text("Add Workout")
                                     .font(.headline)
                             }
                             ToolbarItem(placement: .confirmationAction) {
@@ -60,6 +75,7 @@ struct WorkoutView: View {
     private func addExercise() {
         let newExercise = Exercise(context: viewContext)
         newExercise.name = newName
+        newExercise.equipment = newEquipment
         
         workout.addToExercises(newExercise)
         

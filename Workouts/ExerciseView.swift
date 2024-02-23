@@ -17,8 +17,11 @@ struct ExerciseView: View {
     @Environment(\.editMode) private var editMode
     
     var body: some View {
-        Text(exercise.name)
-            .bold()
+        NavigationLink(destination: StatsView(exercise: exercise)) {
+            Text(exercise.description.capitalized)
+                .bold()
+        }
+        .disabled(editMode?.wrappedValue.isEditing == true)
         if exercise.sets.count > 0 {
             if editMode?.wrappedValue.isEditing == true {
                 ForEach(exercise.sets.array as? [Set] ?? []) { set in
@@ -98,5 +101,64 @@ struct ExerciseView: View {
                 }
             }
         }
+    }
+}
+
+private struct StatsView: View {
+    @State var exercise: Exercise
+    
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \Workout.date, ascending: false)])
+    private var workouts: FetchedResults<Workout>
+    
+    var body: some View {
+        List {
+            Section {
+                LabeledContent("Average reps", value: (((exercise.averageReps * 10).rounded()) / 10).description)
+                LabeledContent("Average weights", value: (((exercise.averageWeights * 10).rounded()) / 10).description)
+                LabeledContent("Training volume", value: exercise.volume.description)
+            } header: {
+                Text("Current")
+            }
+            Section {
+                LabeledContent("Personal record", value: personalRecord()?.description ?? "")
+                LabeledContent("One-rep max", value: oneRepMax().description)
+            } header: {
+                Text("All-time")
+            }
+        }
+        .navigationTitle(exercise.description)
+    }
+    
+    private func personalRecord() -> Set? {
+        var maxSet: Set? = nil
+        for workout in workouts {
+            for exercise in workout.exercises.array as? [Exercise] ?? [Exercise]() {
+                if exercise.name == self.exercise.name {
+                    for set in exercise.sets.array as? [Set] ?? [Set]() {
+                        if set.volume > maxSet?.volume ?? 0 {
+                            maxSet = set
+                        }
+                    }
+                }
+            }
+        }
+        return maxSet
+    }
+    
+    private func oneRepMax() -> Int16 {
+        var maxWeight: Int16 = 0
+        for workout in workouts {
+            for exercise in workout.exercises.array as? [Exercise] ?? [Exercise]() {
+                if exercise.name == self.exercise.name {
+                    for set in exercise.sets.array as? [Set] ?? [Set]() {
+                        if set.weight > maxWeight {
+                            maxWeight = set.weight
+                        }
+                    }
+                }
+            }
+        }
+        return maxWeight
     }
 }

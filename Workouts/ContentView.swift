@@ -10,6 +10,7 @@ import CoreData
 
 struct ContentView: View {
     @State private var isShowingSheet = false
+    @State private var isShowingSettingsSheet = false
     @State private var newName: String = ""
     @State private var newDate: Date = .now
     
@@ -35,10 +36,8 @@ struct ContentView: View {
             }
             .navigationTitle("Workouts")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
                     EditButton()
-                }
-                ToolbarItem {
                     Button(action: { isShowingSheet = true }) {
                         Label("Add Item", systemImage: "plus")
                     }
@@ -63,6 +62,14 @@ struct ContentView: View {
                             }
                         }
                     }
+                }
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Button(action: { isShowingSettingsSheet = true } ) {
+                        Image(systemName: "gear")
+                    }.sheet(isPresented: $isShowingSettingsSheet) {
+                        SettingsView()
+                    }
+                    Spacer()
                 }
             }
         }
