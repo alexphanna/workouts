@@ -41,15 +41,16 @@ struct ContentView: View {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     EditButton()
                 }
-                ToolbarItemGroup(placement: .bottomBar) {
+                ToolbarItem(placement: .bottomBar) {
                     Button(action: { isShowingSettingsSheet = true } ) {
                         Image(systemName: "gear")
                     }.sheet(isPresented: $isShowingSettingsSheet) {
                         SettingsView()
                     }
-                    Spacer()
+                }
+                ToolbarItem(placement: .bottomBar) {
                     Button(action: { isShowingSheet = true }) {
-                        Label("Add Item", systemImage: "plus")
+                        Image(systemName: "plus")
                     }
                     .sheet(isPresented: $isShowingSheet) {
                         NavigationView {
@@ -71,6 +72,20 @@ struct ContentView: View {
                                 }
                             }
                         }
+                    }
+                }
+                ToolbarItem(placement: .status) {
+                    if workouts.count == 0 {
+                        Text("No Workouts")
+                            .font(.caption)
+                    }
+                    else if workouts.count == 1 {
+                        Text(workouts.count.description + " Workout")
+                            .font(.caption)
+                    }
+                    else {
+                        Text(workouts.count.description + " Workouts")
+                            .font(.caption)
                     }
                 }
             }

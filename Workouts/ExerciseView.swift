@@ -120,7 +120,8 @@ struct ExerciseView: View {
 }
 
 private struct StatsView: View {
-    @State var exercise: Exercise
+    @ObservedObject var exercise: Exercise
+    @State var notes: String = ""
     @AppStorage("unit") private var unit: String = "lbs"
     
     @FetchRequest(
@@ -129,21 +130,36 @@ private struct StatsView: View {
     
     var body: some View {
         List {
-            Section {
-                LabeledContent("Average reps", value: (((exercise.averageReps * 10).rounded()) / 10).description)
-                LabeledContent("Average weights", value: (((exercise.averageWeights * 10).rounded()) / 10).description + " " + unit)
-                LabeledContent("Training volume", value: exercise.volume.description + " " + unit)
-            } header: {
-                Text("Current")
+            if exercise.sets.count > 0 {
+                Section(header: Text("Current")) {
+                    LabeledContent("Average reps", value: (((exercise.averageReps * 10).rounded()) / 10).description)
+                    LabeledContent("Average weights", value: (((exercise.averageWeights * 10).rounded()) / 10).description + " " + unit)
+                    LabeledContent("Training volume", value: exercise.volume.description + " " + unit)
+                }
             }
-            Section {
-                LabeledContent("Personal record", value: personalRecord()?.description ?? "")
-                LabeledContent("One-rep max", value: oneRepMax().description + " " + unit)
-            } header: {
-                Text("All-time")
+            if exerciseExists() {
+                Section(header: Text("All-time")) {
+                    LabeledContent("Personal record", value: personalRecord()?.description ?? "")
+                    LabeledContent("One-rep max", value: oneRepMax().description + " " + unit)
+                }
+            }
+            Section(header: Text("Notes")) {
+                TextEditor(text: $exercise.notes)
+                    .font(.callout)
             }
         }
         .navigationTitle(exercise.description)
+    }
+    
+    private func exerciseExists() -> Bool {
+        for workout in workouts {
+            for exercise in workout.exercises.array as? [Exercise] ?? [Exercise]() {
+                if exercise.name == self.exercise.name && exercise.sets.count > 0 {
+                    return true
+                }
+            }
+        }
+        return false
     }
     
     private func personalRecord() -> Set? {

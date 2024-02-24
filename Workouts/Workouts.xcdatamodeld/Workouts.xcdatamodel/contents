@@ -3,6 +3,7 @@
     <entity name="Exercise" representedClassName=".Exercise" syncable="YES">
         <attribute name="equipment" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
+        <attribute name="notes" attributeType="String" defaultValueString=""/>
         <relationship name="sets" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Set" inverseName="exercise" inverseEntity="Set"/>
         <relationship name="workout" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Workout" inverseName="exercises" inverseEntity="Workout"/>
     </entity>
