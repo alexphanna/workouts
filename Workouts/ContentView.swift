@@ -5,6 +5,7 @@
 //  Created by Alex on 2/6/24.
 //
 
+import Foundation
 import SwiftUI
 import CoreData
 
@@ -14,6 +15,7 @@ struct ContentView: View {
     @State private var newName: String = ""
     @State private var newDate: Date = .now
     
+    @Environment(\.editMode) private var editMode
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(
@@ -38,6 +40,14 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     EditButton()
+                }
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Button(action: { isShowingSettingsSheet = true } ) {
+                        Image(systemName: "gear")
+                    }.sheet(isPresented: $isShowingSettingsSheet) {
+                        SettingsView()
+                    }
+                    Spacer()
                     Button(action: { isShowingSheet = true }) {
                         Label("Add Item", systemImage: "plus")
                     }
@@ -62,14 +72,6 @@ struct ContentView: View {
                             }
                         }
                     }
-                }
-                ToolbarItemGroup(placement: .bottomBar) {
-                    Button(action: { isShowingSettingsSheet = true } ) {
-                        Image(systemName: "gear")
-                    }.sheet(isPresented: $isShowingSettingsSheet) {
-                        SettingsView()
-                    }
-                    Spacer()
                 }
             }
         }

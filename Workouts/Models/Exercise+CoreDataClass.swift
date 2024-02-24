@@ -13,10 +13,10 @@ import CoreData
 public class Exercise: NSManagedObject {
     public override var description: String {
         if equipment == "None" {
-            return name
+            return name.capitalized
         }
         else {
-            return equipment + " " + name
+            return (equipment + " " + name).capitalized
         }
     }
     public var averageReps: Double {

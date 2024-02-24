@@ -8,7 +8,7 @@
     </entity>
     <entity name="Set" representedClassName=".Set" syncable="YES">
         <attribute name="reps" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="weight" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="weight" attributeType="Float" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="exercise" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Exercise" inverseName="sets" inverseEntity="Exercise"/>
     </entity>
     <entity name="Workout" representedClassName=".Workout" syncable="YES">

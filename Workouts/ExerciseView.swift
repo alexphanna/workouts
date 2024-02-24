@@ -17,10 +17,25 @@ struct ExerciseView: View {
     @Environment(\.editMode) private var editMode
     
     var body: some View {
-        NavigationLink(destination: StatsView(exercise: exercise)) {
-            Text(exercise.description.capitalized)
-                .bold()
+        HStack {
+            if editMode?.wrappedValue.isEditing == true {
+                Text(exercise.description.capitalized)
+                    .bold()
+                    .foregroundStyle(.gray)
+            }
+            else {
+                Text(exercise.description.capitalized)
+                    .bold()
+            }
+            Spacer()
+            Image(systemName: "info.circle")
+                .foregroundColor(.blue)
+                .imageScale(.large)
         }
+        .background(
+            NavigationLink("", destination: StatsView(exercise: exercise))
+                .opacity(0)
+        )
         .disabled(editMode?.wrappedValue.isEditing == true)
         if exercise.sets.count > 0 {
             if editMode?.wrappedValue.isEditing == true {
@@ -46,7 +61,7 @@ struct ExerciseView: View {
                             TextField("Reps", text: $newReps)
                                 .keyboardType(.numberPad)
                             TextField("Weight", text: $newWeight)
-                                .keyboardType(.numberPad)
+                                .keyboardType(.decimalPad)
                         }
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
@@ -71,7 +86,7 @@ struct ExerciseView: View {
         withAnimation {
             let newSet = Set(context: viewContext)
             newSet.reps = Int16(newReps) ?? 0
-            newSet.weight = Int16(newWeight) ?? 0
+            newSet.weight = Float(newWeight) ?? 0
             
             exercise.addToSets(newSet)
             
@@ -106,6 +121,7 @@ struct ExerciseView: View {
 
 private struct StatsView: View {
     @State var exercise: Exercise
+    @AppStorage("unit") private var unit: String = "lbs"
     
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Workout.date, ascending: false)])
@@ -115,14 +131,14 @@ private struct StatsView: View {
         List {
             Section {
                 LabeledContent("Average reps", value: (((exercise.averageReps * 10).rounded()) / 10).description)
-                LabeledContent("Average weights", value: (((exercise.averageWeights * 10).rounded()) / 10).description)
-                LabeledContent("Training volume", value: exercise.volume.description)
+                LabeledContent("Average weights", value: (((exercise.averageWeights * 10).rounded()) / 10).description + " " + unit)
+                LabeledContent("Training volume", value: exercise.volume.description + " " + unit)
             } header: {
                 Text("Current")
             }
             Section {
                 LabeledContent("Personal record", value: personalRecord()?.description ?? "")
-                LabeledContent("One-rep max", value: oneRepMax().description)
+                LabeledContent("One-rep max", value: oneRepMax().description + " " + unit)
             } header: {
                 Text("All-time")
             }
@@ -146,8 +162,8 @@ private struct StatsView: View {
         return maxSet
     }
     
-    private func oneRepMax() -> Int16 {
-        var maxWeight: Int16 = 0
+    private func oneRepMax() -> Float {
+        var maxWeight: Float = 0
         for workout in workouts {
             for exercise in workout.exercises.array as? [Exercise] ?? [Exercise]() {
                 if exercise.name == self.exercise.name {

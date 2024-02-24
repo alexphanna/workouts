@@ -10,14 +10,14 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage("limitExercises") private var limitExercises: Bool = true
-    @AppStorage("unit") private var unit: String = "lb"
+    @AppStorage("unit") private var unit: String = "lbs"
     @State private var defaultExercises = UserDefaults.standard.stringArray(forKey: "defaultExercises")
     @State private var defaultEquipment = UserDefaults.standard.stringArray(forKey: "defaultEquipment")
     
     var body: some View {
         NavigationView {
             Form {
-                Section {
+                Section(header: Text("Options")) {
                     Toggle(isOn: $limitExercises) {
                         Text("Limit Exercises")
                     }
@@ -29,20 +29,14 @@ struct SettingsView: View {
                     NavigationLink("Equipment") {
                         DefaultsView(defaults: defaultEquipment, forKey: "defaultEquipment")
                     }
-                } header: {
-                    Text("Options")
-                } 
-                Section {
-                    Picker("Measurement System", selection: $unit) {
-                        Text("US").tag("lb")
-                        Text("Metric").tag("kg")
-                    }
-                } header: {
-                    Text("Localization")
-                } footer: {
-                    Text("Workout 0.0.2")
                 }
+                Picker(selection: $unit, label: Text("Weight Unit")) {
+                    Text("Pound (lb)").tag("lbs")
+                    Text("Kilogram (kg)").tag("kgs")
+                }
+                .pickerStyle(.inline)
             }
+            
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Settings")
