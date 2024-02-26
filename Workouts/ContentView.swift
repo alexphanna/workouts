@@ -39,7 +39,6 @@ struct ContentView: View {
                         }
                     }
                 }
-                //.onDelete(perform: deleteWorkouts)
             }
             .navigationTitle("Workouts")
             .toolbar {
@@ -144,6 +143,8 @@ struct ContentView: View {
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
+            
+            multiSelection = Swift.Set<Workout>()
         }
     }
     
@@ -152,6 +153,7 @@ struct ContentView: View {
             for workout in workouts {
                 viewContext.delete(workout)
             }
+            
             do {
                 try viewContext.save()
             } catch {

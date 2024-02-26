@@ -8,9 +8,12 @@
 import SwiftUI
 
 struct ExerciseView: View {
-    @State private var isShowingSheet = false
+    @State private var isShowingSetSheet = false
+    @State private var isShowingExerciseSheet = false
     @State private var newReps = ""
     @State private var newWeight = ""
+    @State private var newName = ""
+    @State private var newEquipment = ""
     @State private var isActive = false
     @State private var isDeleted = false
     @State var exercise: Exercise
@@ -21,18 +24,26 @@ struct ExerciseView: View {
     var body: some View {
         if !isDeleted {
             HStack {
-                Text(exercise.description.capitalized)
+                // Weird workaround to refresh exercise description after renaming
+                Text(isShowingExerciseSheet ? exercise.description.capitalized : exercise.description.capitalized)
                     .bold()
                 Spacer()
                 Menu {
-                    Button(action: { isShowingSheet = true }) {
+                    Button(action: { isShowingSetSheet = true }) {
                         Label("Add Set", systemImage: "plus")
                     }
                     Button(action: { isActive = true }) {
                         Label("Show Exercise Info", systemImage: "info.circle")
                     }
+                    Button(action: {
+                        newName = exercise.name
+                        newEquipment = exercise.equipment
+                        isShowingExerciseSheet = true
+                    }) {
+                        Label("Rename", systemImage: "pencil")
+                    }
                     Button(role: .destructive, action: { deleteExericse() }) {
-                        Label("Delete Exercise", systemImage: "trash")
+                        Label("Delete", systemImage: "trash")
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
@@ -41,7 +52,7 @@ struct ExerciseView: View {
                 }
                 .disabled(editMode?.wrappedValue.isEditing == true)
             }
-            .sheet(isPresented: $isShowingSheet) {
+            .sheet(isPresented: $isShowingSetSheet) {
                 NavigationView {
                     Form {
                         TextField("Reps", text: $newReps)
@@ -51,7 +62,7 @@ struct ExerciseView: View {
                     }
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel", action: { isShowingSheet = false })
+                            Button("Cancel", action: { isShowingSetSheet = false })
                         }
                         ToolbarItem(placement: .principal) {
                             Text("Add Exercise")
@@ -64,11 +75,47 @@ struct ExerciseView: View {
                     }
                 }
             }
+            .sheet(isPresented: $isShowingExerciseSheet) {
+                NavigationView {
+                    Form {
+                        if UserDefaults.standard.bool(forKey: "limitExercises") {
+                            Picker("Name", selection: $newName) {
+                                ForEach(UserDefaults.standard.array(forKey: "defaultExercises") as? [String] ?? [String](), id: \.self) { exercise in
+                                    Text(exercise)
+                                }
+                            }
+                        }
+                        else {
+                            TextField("Name", text: $newName)
+                        }
+                        Picker("Equipment", selection: $newEquipment) {
+                            ForEach(["Barbell", "Dumbbell", "Kettlebell", "Machine", "None"], id: \.self) { equipment in
+                                Text(equipment)
+                            }
+                        }
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel", action: { isShowingExerciseSheet = false })
+                        }
+                        ToolbarItem(placement: .principal) {
+                            Text("Rename Workout")
+                                .font(.headline)
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done", action: renameExericse )
+                        }
+                    }
+                }
+            }
             .background(
                 NavigationLink(destination: StatsView(exercise: exercise), isActive: $isActive) {
                     EmptyView()
                 }
                     .opacity(0)
+                    .onTapGesture {
+                        isActive = false
+                    }
             )
             .disabled(editMode?.wrappedValue.isEditing == true)
             if exercise.sets.count > 0 {
@@ -98,7 +145,7 @@ struct ExerciseView: View {
             
             exercise.addToSets(newSet)
             
-            isShowingSheet = false
+            isShowingSetSheet = false
             newReps = ""
             newWeight = ""
 
@@ -130,6 +177,22 @@ struct ExerciseView: View {
         withAnimation {
             isDeleted = true
             viewContext.delete(exercise)
+
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
+    }
+    
+    private func renameExericse() {
+        withAnimation {
+            exercise.name = newName
+            exercise.equipment = newEquipment
+            
+            isShowingExerciseSheet = false
 
             do {
                 try viewContext.save()
