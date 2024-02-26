@@ -11,74 +11,82 @@ struct ExerciseView: View {
     @State private var isShowingSheet = false
     @State private var newReps = ""
     @State private var newWeight = ""
+    @State private var isActive = false
+    @State private var isDeleted = false
     @State var exercise: Exercise
     
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.editMode) private var editMode
     
     var body: some View {
-        HStack {
-            if editMode?.wrappedValue.isEditing == true {
+        if !isDeleted {
+            HStack {
                 Text(exercise.description.capitalized)
                     .bold()
-                    .foregroundStyle(.gray)
-            }
-            else {
-                Text(exercise.description.capitalized)
-                    .bold()
-            }
-            Spacer()
-            Image(systemName: "info.circle")
-                .foregroundColor(.blue)
-                .imageScale(.large)
-        }
-        .background(
-            NavigationLink("", destination: StatsView(exercise: exercise))
-                .opacity(0)
-        )
-        .disabled(editMode?.wrappedValue.isEditing == true)
-        if exercise.sets.count > 0 {
-            if editMode?.wrappedValue.isEditing == true {
-                ForEach(exercise.sets.array as? [Set] ?? []) { set in
-                    Text(set.description)
+                Spacer()
+                Menu {
+                    Button(action: { isShowingSheet = true }) {
+                        Label("Add Set", systemImage: "plus")
+                    }
+                    Button(action: { isActive = true }) {
+                        Label("Show Exercise Info", systemImage: "info.circle")
+                    }
+                    Button(role: .destructive, action: { deleteExericse() }) {
+                        Label("Delete Exercise", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .foregroundColor(editMode?.wrappedValue.isEditing == true ? .gray : .blue)
+                        .imageScale(.large)
                 }
-                .onDelete(perform: deleteSet)
+                .disabled(editMode?.wrappedValue.isEditing == true)
             }
-            else {
-                VStack(alignment: .leading) {
+            .sheet(isPresented: $isShowingSheet) {
+                NavigationView {
+                    Form {
+                        TextField("Reps", text: $newReps)
+                            .keyboardType(.numberPad)
+                        TextField("Weight", text: $newWeight)
+                            .keyboardType(.decimalPad)
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel", action: { isShowingSheet = false })
+                        }
+                        ToolbarItem(placement: .principal) {
+                            Text("Add Exercise")
+                                .font(.headline)
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done", action: addSet )
+                                .disabled(newReps.isEmpty || newWeight.isEmpty)
+                        }
+                    }
+                }
+            }
+            .background(
+                NavigationLink(destination: StatsView(exercise: exercise), isActive: $isActive) {
+                    EmptyView()
+                }
+                    .opacity(0)
+            )
+            .disabled(editMode?.wrappedValue.isEditing == true)
+            if exercise.sets.count > 0 {
+                if editMode?.wrappedValue.isEditing == true {
                     ForEach(exercise.sets.array as? [Set] ?? []) { set in
                         Text(set.description)
                     }
+                    .onDelete(perform: deleteSet)
                 }
-                .deleteDisabled(true)
-            }
-        }
-        if editMode?.wrappedValue.isEditing == true {
-            Button("Add Set", action: { isShowingSheet = true })
-                .sheet(isPresented: $isShowingSheet) {
-                    NavigationView {
-                        Form {
-                            TextField("Reps", text: $newReps)
-                                .keyboardType(.numberPad)
-                            TextField("Weight", text: $newWeight)
-                                .keyboardType(.decimalPad)
-                        }
-                        .toolbar {
-                            ToolbarItem(placement: .cancellationAction) {
-                                Button("Cancel", action: { isShowingSheet = false })
-                            }
-                            ToolbarItem(placement: .principal) {
-                                Text("Add Exercise")
-                                    .font(.headline)
-                            }
-                            ToolbarItem(placement: .confirmationAction) {
-                                Button("Done", action: addSet )
-                                    .disabled(newReps.isEmpty || newWeight.isEmpty)
-                            }
+                else {
+                    VStack(alignment: .leading) {
+                        ForEach(exercise.sets.array as? [Set] ?? []) { set in
+                            Text(set.description)
                         }
                     }
+                    .deleteDisabled(true)
                 }
-                .deleteDisabled(true)
+            }
         }
     }
     
@@ -114,6 +122,20 @@ struct ExerciseView: View {
                     let nsError = error as NSError
                     fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
                 }
+            }
+        }
+    }
+    
+    private func deleteExericse() {
+        withAnimation {
+            isDeleted = true
+            viewContext.delete(exercise)
+
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
     }
