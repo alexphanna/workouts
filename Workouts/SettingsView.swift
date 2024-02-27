@@ -10,7 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage("limitExercises") private var limitExercises: Bool = true
-    @AppStorage("unit") private var unit: String = "lbs"
+    @AppStorage("unit") private var unit: String = "lb"
     @State private var defaultExercises = UserDefaults.standard.stringArray(forKey: "defaultExercises")
     @State private var defaultEquipment = UserDefaults.standard.stringArray(forKey: "defaultEquipment")
     
@@ -31,8 +31,8 @@ struct SettingsView: View {
                     }
                 }
                 Picker(selection: $unit, label: Text("Weight Unit")) {
-                    Text("Pound (lb)").tag("lbs")
-                    Text("Kilogram (kg)").tag("kgs")
+                    Text("Pound (lb)").tag("lb")
+                    Text("Kilogram (kg)").tag("kg")
                 }
                 .pickerStyle(.inline)
             }

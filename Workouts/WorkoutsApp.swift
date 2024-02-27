@@ -10,7 +10,7 @@ import SwiftUI
 @main
 struct WorkoutsApp: App {
     let persistenceController = PersistenceController.shared
-    private var defaultExercises = ["Squat", "Leg press", "Lunge", "Deadlift", "Leg extension", "Leg curl", "Standing calf raise", "Seated calf raise", "Bench press", "Chest fly", "Push-up", "Pull-down", "Pull-up", "Bent-over row", "Upright row", "Shoulder press", "Lateral raise", "Shouldder shrug", "Pushdown", "Triceps extension", "Bicep curl", "Crunch", "Russian twist", "Leg raise", "Back extension"].sorted { $0 < $1 }
+    private var defaultExercises = ["Squat", "Leg press", "Lunge", "Deadlift", "Leg extension", "Leg curl", "Standing calf raise", "Seated calf raise", "Bench press", "Chest fly", "Push-up", "Pull-down", "Pull-up", "Bent-over row", "Upright row", "Shoulder press", "Lateral raise", "Shoulder shrug", "Pushdown", "Triceps extension", "Bicep curl", "Crunch", "Russian twist", "Leg raise", "Back extension"].sorted { $0 < $1 }
     private var defaultEquipment = ["Barbell", "Dumbbell", "Kettlebell", "Machine", "None"].sorted { $0 < $1 }
     
     init() {

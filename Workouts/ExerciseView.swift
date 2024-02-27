@@ -27,6 +27,10 @@ struct ExerciseView: View {
                 // Weird workaround to refresh exercise description after renaming
                 Text(isShowingExerciseSheet ? exercise.description.capitalized : exercise.description.capitalized)
                     .bold()
+                    .background() {
+                        NavigationLink(destination: StatsView(exercise: exercise), isActive: $isActive) { }
+                            .opacity(0)
+                    }
                 Spacer()
                 Menu {
                     Button(action: { isShowingSetSheet = true }) {
@@ -108,15 +112,6 @@ struct ExerciseView: View {
                     }
                 }
             }
-            .background(
-                NavigationLink(destination: StatsView(exercise: exercise), isActive: $isActive) {
-                    EmptyView()
-                }
-                    .opacity(0)
-                    .onTapGesture {
-                        isActive = false
-                    }
-            )
             .disabled(editMode?.wrappedValue.isEditing == true)
             if exercise.sets.count > 0 {
                 if editMode?.wrappedValue.isEditing == true {

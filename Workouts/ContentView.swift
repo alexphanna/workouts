@@ -29,14 +29,26 @@ struct ContentView: View {
         NavigationView {
             List(selection: $multiSelection) {
                 ForEach(workouts, id: \.self) { workout in
-                    NavigationLink(destination: WorkoutView(workout: workout)) {
-                        VStack(alignment: .leading) {
-                            Text(workout.name)
-                                .font(.headline)
-                            Text(workout.date.formatted(.dateTime.month(.defaultDigits).day(.defaultDigits).year(.twoDigits)))
-                                .font(.callout)
-                                .foregroundStyle(.gray)
+                    VStack(alignment: .leading) {
+                        Text(workout.name)
+                            .font(.headline)
+                        Text(workout.date.formatted(.dateTime.month(.defaultDigits).day(.defaultDigits).year(.twoDigits)))
+                            .font(.callout)
+                            .foregroundStyle(.gray)
+                    }
+                    .contextMenu {
+                        Button("Delete", systemImage: "trash", role: .destructive) {
+                            deleteWorkout(workout: workout)
                         }
+                    }
+                    .swipeActions(edge: .trailing) {
+                        Button("Delete", systemImage: "trash", role: .destructive) {
+                            deleteWorkout(workout: workout)
+                        }
+                    }
+                    .background {
+                        NavigationLink(destination: WorkoutView(workout: workout)) { }
+                            .opacity(0)
                     }
                 }
             }
@@ -130,6 +142,23 @@ struct ContentView: View {
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
+            
+            multiSelection = Swift.Set<Workout>()
+        }
+    }
+    
+    private func deleteWorkout(workout: Workout) {
+        withAnimation {
+            viewContext.delete(workout)
+
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+            
+            multiSelection = Swift.Set<Workout>()
         }
     }
 
