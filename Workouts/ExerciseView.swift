@@ -22,111 +22,113 @@ struct ExerciseView: View {
     @Environment(\.editMode) private var editMode
     
     var body: some View {
-        if !isDeleted {
-            HStack {
-                // Weird workaround to refresh exercise description after renaming
-                Text(isShowingExerciseSheet ? exercise.description.capitalized : exercise.description.capitalized)
-                    .bold()
-                    .background() {
-                        NavigationLink(destination: StatsView(exercise: exercise), isActive: $isActive) { }
-                            .opacity(0)
+        if !isDeleted && exercise.name != "" {
+            Section {
+                HStack {
+                    // Weird workaround to refresh exercise description after renaming
+                    Text(isShowingExerciseSheet ? exercise.description.capitalized : exercise.description.capitalized)
+                        .bold()
+                        .background() {
+                            NavigationLink(destination: StatsView(exercise: exercise), isActive: $isActive) { }
+                                .opacity(0)
+                        }
+                    Spacer()
+                    Menu {
+                        Button(action: { isShowingSetSheet = true }) {
+                            Label("Add Set", systemImage: "plus")
+                        }
+                        Button(action: { isActive = true }) {
+                            Label("Show Exercise Info", systemImage: "info.circle")
+                        }
+                        Button(action: {
+                            newName = exercise.name
+                            newEquipment = exercise.equipment
+                            isShowingExerciseSheet = true
+                        }) {
+                            Label("Rename", systemImage: "pencil")
+                        }
+                        Button(role: .destructive, action: { deleteExercise() }) {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .imageScale(.large)
+                            .opacity(editMode?.wrappedValue.isEditing == true ? 0 : 1)
                     }
-                Spacer()
-                Menu {
-                    Button(action: { isShowingSetSheet = true }) {
-                        Label("Add Set", systemImage: "plus")
-                    }
-                    Button(action: { isActive = true }) {
-                        Label("Show Exercise Info", systemImage: "info.circle")
-                    }
-                    Button(action: {
-                        newName = exercise.name
-                        newEquipment = exercise.equipment
-                        isShowingExerciseSheet = true
-                    }) {
-                        Label("Rename", systemImage: "pencil")
-                    }
-                    Button(role: .destructive, action: { deleteExericse() }) {
-                        Label("Delete", systemImage: "trash")
-                    }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                        .foregroundColor(editMode?.wrappedValue.isEditing == true ? .gray : .blue)
-                        .imageScale(.large)
+                    .disabled(editMode?.wrappedValue.isEditing == true)
                 }
-                .disabled(editMode?.wrappedValue.isEditing == true)
-            }
-            .sheet(isPresented: $isShowingSetSheet) {
-                NavigationView {
-                    Form {
-                        TextField("Reps", text: $newReps)
-                            .keyboardType(.numberPad)
-                        TextField("Weight", text: $newWeight)
-                            .keyboardType(.decimalPad)
-                    }
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel", action: { isShowingSetSheet = false })
+                .sheet(isPresented: $isShowingSetSheet) {
+                    NavigationView {
+                        Form {
+                            TextField("Reps", text: $newReps)
+                                .keyboardType(.numberPad)
+                            TextField("Weight", text: $newWeight)
+                                .keyboardType(.decimalPad)
                         }
-                        ToolbarItem(placement: .principal) {
-                            Text("Add Exercise")
-                                .font(.headline)
-                        }
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Done", action: addSet )
-                                .disabled(newReps.isEmpty || newWeight.isEmpty)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Cancel", action: { isShowingSetSheet = false })
+                            }
+                            ToolbarItem(placement: .principal) {
+                                Text("Add Exercise")
+                                    .font(.headline)
+                            }
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("Done", action: addSet )
+                                    .disabled(newReps.isEmpty || newWeight.isEmpty)
+                            }
                         }
                     }
                 }
-            }
-            .sheet(isPresented: $isShowingExerciseSheet) {
-                NavigationView {
-                    Form {
-                        if UserDefaults.standard.bool(forKey: "limitExercises") {
-                            Picker("Name", selection: $newName) {
-                                ForEach(UserDefaults.standard.array(forKey: "defaultExercises") as? [String] ?? [String](), id: \.self) { exercise in
-                                    Text(exercise)
+                .sheet(isPresented: $isShowingExerciseSheet) {
+                    NavigationView {
+                        Form {
+                            if UserDefaults.standard.bool(forKey: "limitExercises") {
+                                Picker("Name", selection: $newName) {
+                                    ForEach(UserDefaults.standard.array(forKey: "defaultExercises") as? [String] ?? [String](), id: \.self) { exercise in
+                                        Text(exercise)
+                                    }
+                                }
+                            }
+                            else {
+                                TextField("Name", text: $newName)
+                            }
+                            Picker("Equipment", selection: $newEquipment) {
+                                ForEach(["Barbell", "Dumbbell", "Kettlebell", "Machine", "None"], id: \.self) { equipment in
+                                    Text(equipment)
                                 }
                             }
                         }
-                        else {
-                            TextField("Name", text: $newName)
-                        }
-                        Picker("Equipment", selection: $newEquipment) {
-                            ForEach(["Barbell", "Dumbbell", "Kettlebell", "Machine", "None"], id: \.self) { equipment in
-                                Text(equipment)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Cancel", action: { isShowingExerciseSheet = false })
+                            }
+                            ToolbarItem(placement: .principal) {
+                                Text("Rename Workout")
+                                    .font(.headline)
+                            }
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("Done", action: renameExericse )
                             }
                         }
                     }
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel", action: { isShowingExerciseSheet = false })
-                        }
-                        ToolbarItem(placement: .principal) {
-                            Text("Rename Workout")
-                                .font(.headline)
-                        }
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Done", action: renameExericse )
-                        }
-                    }
                 }
-            }
-            .disabled(editMode?.wrappedValue.isEditing == true)
-            if exercise.sets.count > 0 {
-                if editMode?.wrappedValue.isEditing == true {
-                    ForEach(exercise.sets.array as? [Set] ?? []) { set in
-                        Text(set.description)
-                    }
-                    .onDelete(perform: deleteSet)
-                }
-                else {
-                    VStack(alignment: .leading) {
+                .disabled(editMode?.wrappedValue.isEditing == true)
+                if exercise.sets.count > 0 {
+                    /*if editMode?.wrappedValue.isEditing == true {
                         ForEach(exercise.sets.array as? [Set] ?? []) { set in
                             Text(set.description)
                         }
+                        .onDelete(perform: deleteSet)
+                    }*/
+                    if editMode?.wrappedValue.isEditing == false {
+                        VStack(alignment: .leading) {
+                            ForEach(exercise.sets.array as? [Set] ?? []) { set in
+                                Text(set.description)
+                            }
+                        }
+                        .deleteDisabled(true)
                     }
-                    .deleteDisabled(true)
                 }
             }
         }
@@ -168,7 +170,7 @@ struct ExerciseView: View {
         }
     }
     
-    private func deleteExericse() {
+    private func deleteExercise() {
         withAnimation {
             isDeleted = true
             viewContext.delete(exercise)
@@ -202,6 +204,7 @@ struct ExerciseView: View {
 private struct StatsView: View {
     @ObservedObject var exercise: Exercise
     @State var notes: String = ""
+    @AppStorage("estimation") private var estimation: String = "Epley"
     @AppStorage("unit") private var unit: String = "lbs"
     
     @FetchRequest(
@@ -220,7 +223,10 @@ private struct StatsView: View {
             if exerciseExists() {
                 Section(header: Text("All-time")) {
                     LabeledContent("Personal record", value: personalRecord()?.description ?? "")
-                    LabeledContent("One-rep max", value: oneRepMax().description + " " + unit)
+                    LabeledContent("One-rep max (1RM)", value: oneRepMax().description + " " + unit)
+                }
+                Section(header: Text("Estimated")) {
+                    LabeledContent("Estimated 1RM", value: (((estimatedOneRepMax() * 10).rounded()) / 10).description + " " + unit)
                 }
             }
             Section(header: Text("Notes")) {
@@ -272,5 +278,15 @@ private struct StatsView: View {
             }
         }
         return maxWeight
+    }
+    
+    private func estimatedOneRepMax() -> Float {
+        let personalRecord: Set = personalRecord() ?? Set()
+        if estimation == "Epley" {
+            return personalRecord.weight * (1 + (Float(personalRecord.reps) / 30))
+        }
+        else {
+            return personalRecord.weight * (36 / (37 - Float(personalRecord.reps)))
+        }
     }
 }

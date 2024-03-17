@@ -19,11 +19,9 @@ struct WorkoutView: View {
     var body: some View {
         List {
             ForEach(workout.exercises.array as? [Exercise] ?? []) { (exercise: Exercise) in
-                Section {
-                    ExerciseView(exercise: exercise)
-                }
+                ExerciseView(exercise: exercise)
             }
-            //.onDelete(perform: deleteExercises)
+            .onDelete(perform: deleteExercises)
         }
         .navigationTitle(workout.name)
         .toolbar {
